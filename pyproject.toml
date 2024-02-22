@@ -1,0 +1,22 @@
+[project]
+name = "agogos"
+version = "0.0.1"
+authors = [
+    { name = "Jasper van Selm", email = "jmvanselm@gmail.com" },
+]
+description = "This package contains the code for creating a ml pipeline"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies= [
+    # Machine Learning Libraries
+    "scikit-learn>=1.4.0",
+    "numpy>=1.26.2",
+
+    # Parallel Processing Libraries
+    "dask>=2023.12.0"
+]
