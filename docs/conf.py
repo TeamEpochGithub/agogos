@@ -9,10 +9,8 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Final
 
-from pygit2 import Repository  # type: ignore[import-untyped, import-not-found]
-
 # GitHub repository URL
-REPO_URL: Final[str] = f"https://github.com/schobbejak/agogos"
+REPO_URL: Final[str] = "https://github.com/schobbejak/agogos"
 
 sys.path.insert(0, Path("../..").resolve().as_posix())
 

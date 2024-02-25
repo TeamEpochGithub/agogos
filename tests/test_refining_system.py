@@ -4,7 +4,6 @@ from agogos.refining_system import RefiningSystem
 
 
 class TestRefiningSystem:
-
     def test_refining_system_init(self):
         refining_system = RefiningSystem()
         assert refining_system is not None
@@ -13,6 +12,7 @@ class TestRefiningSystem:
         class SubRefiner(Refiner):
             def refine(self, x):
                 return x
+
         block1 = SubRefiner()
         refining_system = RefiningSystem(steps=[block1])
         assert refining_system is not None
@@ -21,6 +21,7 @@ class TestRefiningSystem:
         class SubRefiner:
             def refine(self, x):
                 return x
+
         with pytest.raises(AssertionError):
             RefiningSystem(steps=[SubRefiner()])
 
@@ -28,10 +29,11 @@ class TestRefiningSystem:
         class SubRefiner(Refiner):
             def predict(self, x):
                 return x
+
         block1 = SubRefiner()
         refining_system = RefiningSystem(steps=[block1])
         assert refining_system.predict([1, 2, 3]) == [1, 2, 3]
 
     def test_refining_system_empty_hash(self):
         refining_system = RefiningSystem()
-        assert refining_system.get_hash() == ''
+        assert refining_system.get_hash() == ""

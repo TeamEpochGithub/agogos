@@ -5,7 +5,6 @@ from agogos.transforming_system import TransformingSystem
 
 
 class TestTransformingSystem:
-
     def test_transforming_system_init(self):
         transforming_system = TransformingSystem()
         assert transforming_system is not None
@@ -14,6 +13,7 @@ class TestTransformingSystem:
         class SubTransformer(Transformer):
             def predict(self, x):
                 return x
+
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
         assert transforming_system is not None
@@ -22,6 +22,7 @@ class TestTransformingSystem:
         class SubTransformer:
             def predict(self, x):
                 return x
+
         with pytest.raises(AssertionError):
             TransformingSystem(steps=[SubTransformer()])
 
@@ -29,6 +30,7 @@ class TestTransformingSystem:
         class SubTransformer(Transformer):
             def transform(self, x):
                 return x
+
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
         assert transforming_system.transform([1, 2, 3]) == [1, 2, 3]
@@ -37,6 +39,7 @@ class TestTransformingSystem:
         class SubTransformer(Transformer):
             def transform(self, x):
                 return x * 2
+
         block1 = SubTransformer()
         block2 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1, block2])
@@ -47,10 +50,11 @@ class TestTransformingSystem:
         class SubTransformer(Transformer):
             def transform(self, x):
                 return x
+
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
         assert transforming_system.predict([1, 2, 3]) == [1, 2, 3]
 
     def test_transforming_system_empty_hash(self):
         transforming_system = TransformingSystem()
-        assert transforming_system.get_hash() == ''
+        assert transforming_system.get_hash() == ""

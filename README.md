@@ -2,12 +2,11 @@
 
 This package contains many modules and classes necessary to construct the ml pipeline for machine learning competitions.
 
-
-# Pytest coverage report
+## Pytest coverage report
 
 To generate pytest coverage report run
 
-```
+```shell
 pytest --cov=agogos --cov-report=html:coverage_re
 ```
 

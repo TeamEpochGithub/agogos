@@ -5,7 +5,6 @@ from agogos._core._system import System
 
 
 class TestSystem:
-
     def test_system_init(self):
         system = System()
         assert system is not None
@@ -17,10 +16,10 @@ class TestSystem:
 
     def test_system_hash_no_steps(self):
         system = System()
-        assert system.get_hash() == ''
+        assert system.get_hash() == ""
 
     def test_system_hash_with_steps(self):
         block1 = Block()
 
         system = System([block1])
-        assert system.get_hash() == '87c2f610eca16f4d524177c6382ef6b9'
+        assert system.get_hash() == "87c2f610eca16f4d524177c6382ef6b9"
