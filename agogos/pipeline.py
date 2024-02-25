@@ -73,12 +73,19 @@ class Pipeline:
         if self.y_system is not None:
             xy_hash += self.y_system.get_hash()
         
-        self._hash = hash(self._hash + xy_hash)
+        if xy_hash != '':
+            self._hash = hash(self._hash + xy_hash)
 
         if self.training_system is not None:
-            self._hash = hash(self._hash + self.training_system.get_hash())
+            self.training_system._set_hash(self._hash)
+            training_hash = self.training_system.get_hash()
+            if training_hash != '':
+                self._hash = hash(self._hash + training_hash)
         if self.refining_system is not None:
-            self._hash = hash(self._hash + self.refining_system.get_hash())
+            self.refining_system._set_hash(self._hash)
+            refining_hash = self.refining_system.get_hash()
+            if refining_hash != '':
+                self._hash = hash(self._hash + refining_hash)
         
     def get_hash(self) -> str:
         """Get the hash of the pipeline.

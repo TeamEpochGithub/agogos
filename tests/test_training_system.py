@@ -40,3 +40,7 @@ class TestTrainingSystem:
         block1 = SubTransformer()
         transforming_system = TrainingSystem(steps=[block1])
         assert transforming_system.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
+
+    def test_training_system_empty_hash(self):
+        training_system = TrainingSystem()
+        assert training_system.get_hash() == ''

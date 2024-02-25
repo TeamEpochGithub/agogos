@@ -31,3 +31,7 @@ class TestRefiningSystem:
         block1 = SubRefiner()
         refining_system = RefiningSystem(steps=[block1])
         assert refining_system.predict([1, 2, 3]) == [1, 2, 3]
+
+    def test_refining_system_empty_hash(self):
+        refining_system = RefiningSystem()
+        assert refining_system.get_hash() == ''

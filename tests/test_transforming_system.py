@@ -50,3 +50,7 @@ class TestTransformingSystem:
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
         assert transforming_system.predict([1, 2, 3]) == [1, 2, 3]
+
+    def test_transforming_system_empty_hash(self):
+        transforming_system = TransformingSystem()
+        assert transforming_system.get_hash() == ''
