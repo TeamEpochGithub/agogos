@@ -10,7 +10,7 @@ class Transformer(Block):
     @abstractmethod
     def transform(self, data: np.ndarray) -> np.ndarray:
         """Transform the input data.
-        
+
         :param data: The input data.
         :return: The transformed data."""
         raise NotImplementedError
