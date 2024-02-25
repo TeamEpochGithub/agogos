@@ -1,14 +1,15 @@
 from abc import abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
+from joblib import hash
 
-from agogos._core.block import Block
+from agogos._core._block import Block
 
 
 @dataclass
 class System:
 
-    steps: list[Block]
+    steps: list[Block] = field(default_factory=list)
 
     def __post_init__(self):
         self._set_hash('')
@@ -20,7 +21,7 @@ class System:
         :param x: The input to the system.
         :return: The output of the system.
         """
-        raise NotImplementedError
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement predict method.")
 
     def _set_hash(self, prev_hash: str) -> None:
         """Set the hash of the system.

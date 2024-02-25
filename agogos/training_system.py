@@ -1,7 +1,7 @@
+from dataclasses import dataclass
 import numpy as np
-from agogos._core.system import System
+from agogos._core._system import System
 from agogos.trainer import Trainer
-
 
 class TrainingSystem(System):
 
@@ -10,7 +10,7 @@ class TrainingSystem(System):
     def __post_init__(self):
         # Assert all steps are a subclass of Trainer
         for step in self.steps:
-            assert issubclass(step, Trainer), f'{step} is not a subclass of Trainer'
+            assert issubclass(step.__class__, Trainer), f'{step} is not a subclass of Trainer'
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """Predict the output of the system.

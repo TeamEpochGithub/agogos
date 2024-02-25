@@ -1,7 +1,7 @@
 from abc import abstractmethod
 import numpy as np
 
-from agogos._core.block import Block
+from agogos._core._block import Block
 
 
 class Trainer(Block):
@@ -13,7 +13,7 @@ class Trainer(Block):
 
         :param x: The input data.
         :param y: The target variable."""
-        raise NotImplementedError
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement train method.")
 
     @abstractmethod
     def predict(self, x: np.ndarray) -> np.ndarray:
@@ -21,4 +21,4 @@ class Trainer(Block):
 
         :param x: The input data.
         :return: The predictions."""
-        raise NotImplementedError
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement predict method.")
