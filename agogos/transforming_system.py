@@ -10,10 +10,12 @@ class TransformingSystem(System):
     
     def __post_init__(self):
         """Post init method for the TransformingSystem class."""
-        
+
         # Assert all steps are a subclass of Transformer
         for step in self.steps:
             assert issubclass(step.__class__, Transformer), f'{step} is not a subclass of Transformer'
+
+        super().__post_init__()
     
     def transform(self, x: np.ndarray) -> np.ndarray:
         """Transform the input data.

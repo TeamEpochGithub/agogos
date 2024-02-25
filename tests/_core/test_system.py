@@ -17,7 +17,6 @@ class TestSystem:
 
     def test_system_hash_no_steps(self):
         system = System()
-        system._set_hash('')
         assert system.get_hash() == ''
 
     def test_system_hash_with_steps(self):

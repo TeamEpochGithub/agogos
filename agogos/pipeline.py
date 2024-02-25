@@ -5,6 +5,7 @@ from agogos.refining_system import RefiningSystem
 from agogos.training_system import TrainingSystem
 
 from agogos.transforming_system import TransformingSystem
+from joblib import hash
 
 
 @dataclass

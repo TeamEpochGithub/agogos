@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from agogos.transformer import Transformer
 from agogos.transforming_system import TransformingSystem
@@ -24,13 +25,23 @@ class TestTransformingSystem:
         with pytest.raises(AssertionError):
             TransformingSystem(steps=[SubTransformer()])
 
-    def test_transforming_system_transform(self):
+    def test_transforming_system_transform_1_block(self):
         class SubTransformer(Transformer):
             def transform(self, x):
                 return x
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
         assert transforming_system.transform([1, 2, 3]) == [1, 2, 3]
+
+    def test_transforming_system_transform_2_blocks(self):
+        class SubTransformer(Transformer):
+            def transform(self, x):
+                return x * 2
+        block1 = SubTransformer()
+        block2 = SubTransformer()
+        transforming_system = TransformingSystem(steps=[block1, block2])
+        result = transforming_system.transform(np.array([1, 2, 3]))
+        assert np.array_equal(result, np.array([4, 8, 12]))
 
     def test_transforming_system_predict(self):
         class SubTransformer(Transformer):
