@@ -2,12 +2,11 @@
 
 This package contains many modules and classes necessary to construct the ml pipeline for machine learning competitions.
 
-
-# Pytest coverage report
+## Pytest coverage report
 
 To generate pytest coverage report run
 
-```
+```shell
 pytest --cov=agogos --cov-report=html:coverage_re
 ```
 
@@ -24,3 +23,8 @@ cd ./docs/;
 ./make.bat html; start chrome file://$PWD/_build/html/index.html
 cd ../
 ```
+
+## Uploading to pypi
+
+```shell
+python -m build
