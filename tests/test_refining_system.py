@@ -25,6 +25,17 @@ class TestRefiningSystem:
         with pytest.raises(AssertionError):
             RefiningSystem(steps=[SubRefiner()])
 
+    def test_refining_system_steps_changed(self):
+        class SubRefiner:
+            def refine(self, x):
+                return x
+
+        block1 = SubRefiner()
+        refining_system = RefiningSystem()
+        refining_system.steps = [block1]
+        with pytest.raises(TypeError):
+            refining_system.predict([1, 2, 3])
+
     def test_refining_system_predict(self):
         class SubRefiner(Refiner):
             def predict(self, x):
