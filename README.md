@@ -24,3 +24,9 @@ cd ./docs/;
 ./make.bat html; start chrome file://$PWD/_build/html/index.html
 cd ../
 ```
+
+## Uploading to pypi
+
+```shell
+python -m build
+

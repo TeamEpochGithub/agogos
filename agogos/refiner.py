@@ -10,9 +10,9 @@ from agogos._core.block import Block
 class Refiner(Block):
 
     @abstractmethod
-    def predict(self, predictions: np.ndarray) -> np.ndarray:
+    def predict(self, y: np.ndarray) -> np.ndarray:
         """Predict the target variable.
         
-        :param predictions: The predictions to refine.
+        :param y: The predictions to refine.
         :return: The predictions."""
         raise NotImplementedError
