@@ -25,9 +25,9 @@ class TestTransformingSystem:
 
         with pytest.raises(AssertionError):
             TransformingSystem(steps=[SubTransformer()])
-    
+
     def test_transforming_system_steps_changed(self):
-        class SubTransformer():
+        class SubTransformer:
             def transform(self, x):
                 return x
 
