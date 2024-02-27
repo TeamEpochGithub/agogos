@@ -21,7 +21,7 @@ class TestPipeline:
             y_system=y_system,
             training_system=training_system,
             prediction_system=prediction_system,
-            label_system=label_system
+            label_system=label_system,
         )
         assert pipeline is not None
 
@@ -36,7 +36,7 @@ class TestPipeline:
             y_system=y_system,
             training_system=training_system,
             prediction_system=prediction_system,
-            label_system=label_system
+            label_system=label_system,
         )
         assert pipeline.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
