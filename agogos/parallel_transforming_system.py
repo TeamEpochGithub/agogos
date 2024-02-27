@@ -7,9 +7,9 @@ from agogos.transforming_system import TransformingSystem
 
 class ParallelTransformingSystem(System):
     """A system that transforms the input data in parallel.
-    
+
     :param transformers: The transformers to transform the input data."""
-    
+
     transformers: list[Transformer | TransformingSystem]
 
     def __post_init__(self) -> None:
@@ -17,9 +17,7 @@ class ParallelTransformingSystem(System):
 
         # Assert all steps are a subclass of Transformer or TransformingSystem
         for step in self.steps:
-            assert issubclass(
-                step.__class__, Transformer
-            ) or issubclass(
+            assert issubclass(step.__class__, Transformer) or issubclass(
                 step.__class__, TransformingSystem
             ), f"{step} is not a subclass of Transformer or TransformingSystem"
 
@@ -36,10 +34,12 @@ class ParallelTransformingSystem(System):
             if isinstance(step, Transformer) or isinstance(step, TransformingSystem):
                 data = self.concat(data, step.transform(data))
             else:
-                raise TypeError(f"{step} is not a subclass of Transformer or TransformingSystem")
+                raise TypeError(
+                    f"{step} is not a subclass of Transformer or TransformingSystem"
+                )
 
         return data
-    
+
     @abstractmethod
     def concat(self, data1: Any, data2: Any) -> Any:
         """Concatenate the transformed data.
@@ -51,6 +51,3 @@ class ParallelTransformingSystem(System):
         raise NotImplementedError(
             f"{self.__class__.__name__} does not implement concat method."
         )
-
-
-    
