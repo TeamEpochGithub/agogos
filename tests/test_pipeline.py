@@ -146,3 +146,39 @@ class TestPipeline:
             prediction_system=prediction_system,
         )
         assert pipeline.get_hash() == "aa7c4cff990dc48c4e3456deed913e16"
+
+    def test_pipeline_predict_system_hash(self):
+        class TransformingBlock(Transformer):
+            def transform(self, x):
+                return x * 2
+
+        transform1 = TransformingBlock()
+        x_system = TransformingSystem()
+        y_system = TransformingSystem()
+        training_system = TrainingSystem()
+        prediction_system = TransformingSystem(steps=[transform1])
+        pipeline = Pipeline(
+            x_system=x_system,
+            y_system=y_system,
+            training_system=training_system,
+            prediction_system=prediction_system,
+        )
+        assert pipeline.get_hash() == "842e1162d744e7ab09c941300a43c218"
+
+    def test_pipeline_pre_post_hash(self):
+        class TransformingBlock(Transformer):
+            def transform(self, x):
+                return x * 2
+
+        transform1 = TransformingBlock()
+        x_system = TransformingSystem(steps=[transform1])
+        y_system = TransformingSystem()
+        training_system = TrainingSystem()
+        prediction_system = TransformingSystem(steps=[transform1])
+        pipeline = Pipeline(
+            x_system=x_system,
+            y_system=y_system,
+            training_system=training_system,
+            prediction_system=prediction_system,
+        )
+        assert pipeline.get_hash() == "3dda824076fddafd028812e7891fbd8b"

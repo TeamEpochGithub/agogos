@@ -58,8 +58,8 @@ class Pipeline:
             x = self.x_system.transform(x)
         if self.training_system is not None:
             x = self.training_system.predict(x)
-        if self.y_system is not None:
-            x = self.y_system.transform(x)
+        if self.prediction_system is not None:
+            x = self.prediction_system.transform(x)
 
         return x
 
