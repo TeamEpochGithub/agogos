@@ -17,11 +17,11 @@ class TestPipeline:
         prediction_system = TransformingSystem()
         label_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
-            label_system=label_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
+            label_sys=label_system,
         )
         assert pipeline is not None
 
@@ -32,11 +32,11 @@ class TestPipeline:
         prediction_system = TransformingSystem()
         label_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
-            label_system=label_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
+            label_sys=label_system,
         )
         assert pipeline.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
@@ -45,9 +45,9 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            x_sys=x_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         assert pipeline.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
@@ -56,9 +56,9 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem()
         pipeline = Pipeline(
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         assert pipeline.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
@@ -67,7 +67,9 @@ class TestPipeline:
         y_system = TransformingSystem()
         training_system = TrainingSystem()
         pipeline = Pipeline(
-            x_system=x_system, y_system=y_system, training_system=training_system
+            x_sys=x_system, 
+            y_sys=y_system, 
+            train_sys=training_system
         )
         assert pipeline.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
@@ -82,10 +84,10 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         result = pipeline.train(np.array([1, 2, 3]), [1, 2, 3])
         assert np.array_equal(result[0], np.array([2, 4, 6])) and np.array_equal(
@@ -98,10 +100,10 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         assert pipeline.predict([1, 2, 3]) == [1, 2, 3]
 
@@ -110,9 +112,9 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            x_sys=x_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         assert pipeline.predict([1, 2, 3]) == [1, 2, 3]
 
@@ -122,10 +124,10 @@ class TestPipeline:
         training_system = TrainingSystem()
         predicting_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=predicting_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=predicting_system,
         )
         assert pipeline.get_hash() == ""
 
@@ -140,10 +142,10 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem()
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         assert pipeline.get_hash() == "aa7c4cff990dc48c4e3456deed913e16"
 
@@ -158,10 +160,10 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem(steps=[transform1])
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         assert pipeline.get_hash() == "842e1162d744e7ab09c941300a43c218"
 
@@ -176,9 +178,9 @@ class TestPipeline:
         training_system = TrainingSystem()
         prediction_system = TransformingSystem(steps=[transform1])
         pipeline = Pipeline(
-            x_system=x_system,
-            y_system=y_system,
-            training_system=training_system,
-            prediction_system=prediction_system,
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=training_system,
+            pred_sys=prediction_system,
         )
         assert pipeline.get_hash() == "3dda824076fddafd028812e7891fbd8b"

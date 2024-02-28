@@ -11,18 +11,18 @@ from joblib import hash
 class Pipeline:
     """A pipeline of systems that can be trained and predicted.
 
-    :param x_system: The system to transform the input data.
-    :param y_system: The system to transform the labelled data.
-    :param training_system: The system to train the data.
-    :param prediction_system: The system to transform the predictions.
-    :param label_system: The system to transform the labels.
+    :param x_sys: The system to transform the input data.
+    :param y_sys: The system to transform the labelled data.
+    :param train_sys: The system to train the data.
+    :param pred_sys: The system to transform the predictions.
+    :param label_sys: The system to transform the labels.
     """
 
-    x_system: TransformingSystem | None = None
-    y_system: TransformingSystem | None = None
-    training_system: TrainingSystem | None = None
-    prediction_system: TransformingSystem | None = None
-    label_system: TransformingSystem | None = None
+    x_sys: TransformingSystem | None = None
+    y_sys: TransformingSystem | None = None
+    train_sys: TrainingSystem | None = None
+    pred_sys: TransformingSystem | None = None
+    label_sys: TransformingSystem | None = None
 
     def __post_init__(self) -> None:
         """Post init method for the Pipeline class."""
@@ -35,16 +35,16 @@ class Pipeline:
         :param y: The expected output of the system.
         :return: The input and output of the system.
         """
-        if self.x_system is not None:
-            x = self.x_system.transform(x)
-        if self.y_system is not None:
-            y = self.y_system.transform(y)
-        if self.training_system is not None:
-            x, y = self.training_system.train(x, y)
-        if self.prediction_system is not None:
-            x = self.prediction_system.transform(x)
-        if self.label_system is not None:
-            y = self.label_system.transform(y)
+        if self.x_sys is not None:
+            x = self.x_sys.transform(x)
+        if self.y_sys is not None:
+            y = self.y_sys.transform(y)
+        if self.train_sys is not None:
+            x, y = self.train_sys.train(x, y)
+        if self.pred_sys is not None:
+            x = self.pred_sys.transform(x)
+        if self.label_sys is not None:
+            y = self.label_sys.transform(y)
 
         return x, y
 
@@ -54,12 +54,12 @@ class Pipeline:
         :param x: The input to the system.
         :return: The output of the system.
         """
-        if self.x_system is not None:
-            x = self.x_system.transform(x)
-        if self.training_system is not None:
-            x = self.training_system.predict(x)
-        if self.prediction_system is not None:
-            x = self.prediction_system.transform(x)
+        if self.x_sys is not None:
+            x = self.x_sys.transform(x)
+        if self.train_sys is not None:
+            x = self.train_sys.predict(x)
+        if self.pred_sys is not None:
+            x = self.pred_sys.transform(x)
 
         return x
 
@@ -71,25 +71,25 @@ class Pipeline:
         self._hash = prev_hash
 
         xy_hash = ""
-        if self.x_system is not None:
-            xy_hash += self.x_system.get_hash()
-        if self.y_system is not None:
-            xy_hash += self.y_system.get_hash()
+        if self.x_sys is not None:
+            xy_hash += self.x_sys.get_hash()
+        if self.y_sys is not None:
+            xy_hash += self.y_sys.get_hash()
 
         if xy_hash != "":
             self._hash = hash(self._hash + xy_hash)
 
-        if self.training_system is not None:
-            self.training_system._set_hash(self._hash)
-            training_hash = self.training_system.get_hash()
+        if self.train_sys is not None:
+            self.train_sys._set_hash(self._hash)
+            training_hash = self.train_sys.get_hash()
             if training_hash != "":
                 self._hash = hash(self._hash + training_hash)
 
         predlabel_hash = ""
-        if self.prediction_system is not None:
-            predlabel_hash += self.prediction_system.get_hash()
-        if self.label_system is not None:
-            predlabel_hash += self.label_system.get_hash()
+        if self.pred_sys is not None:
+            predlabel_hash += self.pred_sys.get_hash()
+        if self.label_sys is not None:
+            predlabel_hash += self.label_sys.get_hash()
 
         if predlabel_hash != "":
             if self._hash == "":
