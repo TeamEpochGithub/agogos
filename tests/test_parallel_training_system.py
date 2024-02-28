@@ -76,6 +76,41 @@ class TestParallelTrainingSystem:
         assert system is not None
         assert system.predict([1, 2, 3]) == [1, 2, 3]
 
+    def test_PTrainSys_predict_with_trainsys(self):
+        class trainer(Trainer):
+            def predict(self, x):
+                return x
+
+        class pts(ParallelTrainingSystem):
+            def concat(self, data1, data2):
+                return data1 + data2
+
+        t1 = trainer()
+        t2 = TrainingSystem(steps=[t1])
+
+        system = pts(steps=[t2, t1])
+
+        assert system is not None
+        assert system.predict([1, 2, 3]) == [1, 2, 3, 1, 2, 3]
+
+    def test_PTrainSys_predict_with_trainer_and_trainsys(self):
+        class trainer(Trainer):
+            def predict(self, x):
+                return x
+
+        class pts(ParallelTrainingSystem):
+            def concat(self, data1, data2):
+                return data1 + data2
+
+        t1 = trainer()
+        t2 = trainer()
+        t3 = TrainingSystem(steps=[t1, t2])
+
+        system = pts(steps=[t1, t2, t3])
+
+        assert system is not None
+        assert system.predict([1, 2, 3]) == [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]
+
     def test_PTrainSys_predictors(self):
         class trainer(Trainer):
             def predict(self, x):

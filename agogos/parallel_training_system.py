@@ -50,7 +50,7 @@ class ParallelTrainingSystem(System):
 
         return x, y
 
-    def predict(self, x: Any) -> Any:
+    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any:
         """Predict the output of the system.
 
         :param x: The input to the system.
@@ -59,16 +59,45 @@ class ParallelTrainingSystem(System):
 
         # Loop through each trainer and call the predict method
         for trainer in self.steps[:1]:
-            if isinstance(trainer, Trainer) or isinstance(trainer, TrainingSystem):
-                x = trainer.predict(x)
+            if isinstance(trainer, Trainer):
+                trainer_class_name = trainer.__class__.__name__
+                trainer_pred_args = (
+                    pred_args[trainer_class_name]
+                    if pred_args and trainer_class_name in pred_args
+                    else {}
+                )
+                x = trainer.predict(x, **trainer_pred_args)
+            elif isinstance(trainer, TrainingSystem):
+                x = trainer.predict(
+                    x,
+                    pred_args[trainer.__class__.__name__]
+                    if pred_args is not None and trainer.__class__.__name__ in pred_args
+                    else None,
+                )
             else:
                 raise TypeError(
                     f"{trainer} is not a subclass of Trainer or TrainingSystem"
                 )
 
         for trainer in self.steps[1:]:
-            if isinstance(trainer, Trainer) or isinstance(trainer, TrainingSystem):
-                x = self.concat(x, trainer.predict(x))
+            if isinstance(trainer, Trainer):
+                trainer_class_name = trainer.__class__.__name__
+                trainer_pred_args = (
+                    pred_args[trainer_class_name]
+                    if pred_args and trainer_class_name in pred_args
+                    else {}
+                )
+                x_new = trainer.predict(x, **trainer_pred_args)
+                x = self.concat(x, x_new)
+            elif isinstance(trainer, TrainingSystem):
+                trainer_class_name = trainer.__class__.__name__
+                trainer_pred_args = (
+                    pred_args[trainer_class_name]
+                    if pred_args and trainer_class_name in pred_args
+                    else {}
+                )
+                x_new = trainer.predict(x, trainer_pred_args)
+                x = self.concat(x, x_new)
             else:
                 raise TypeError(
                     f"{trainer} is not a subclass of Trainer or TrainingSystem"
