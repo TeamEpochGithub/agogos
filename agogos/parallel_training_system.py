@@ -8,10 +8,8 @@ from agogos.training_system import TrainingSystem
 class ParallelTrainingSystem(System):
     """A system that trains the input data in parallel.
 
-    :param trainers: The trainers to train the input data.
+    :param steps: The steps to train the input data.
     """
-
-    trainers: list[Trainer | TrainingSystem]
 
     def __post_init__(self) -> None:
         """Post init method for the ParallelTrainingSystem class."""
@@ -33,7 +31,15 @@ class ParallelTrainingSystem(System):
         """
 
         # Loop through each step and call the train method
-        for trainer in self.trainers:
+        for trainer in self.steps[:1]:
+            if isinstance(trainer, Trainer) or isinstance(trainer, TrainingSystem):
+                x, y = trainer.train(x, y)
+            else:
+                raise TypeError(
+                    f"{trainer} is not a subclass of Trainer or TrainingSystem"
+                )
+
+        for trainer in self.steps[1:]:
             if isinstance(trainer, Trainer) or isinstance(trainer, TrainingSystem):
                 new_x, new_y = trainer.train(x, y)
                 x, y = self.concat(x, new_x), self.concat_labels(y, new_y)
@@ -52,13 +58,23 @@ class ParallelTrainingSystem(System):
         """
 
         # Loop through each trainer and call the predict method
-        for trainer in self.trainers:
+        for trainer in self.steps[:1]:
+            if isinstance(trainer, Trainer) or isinstance(trainer, TrainingSystem):
+                x = trainer.predict(x)
+            else:
+                raise TypeError(
+                    f"{trainer} is not a subclass of Trainer or TrainingSystem"
+                )
+
+        for trainer in self.steps[1:]:
             if isinstance(trainer, Trainer) or isinstance(trainer, TrainingSystem):
                 x = self.concat(x, trainer.predict(x))
             else:
                 raise TypeError(
                     f"{trainer} is not a subclass of Trainer or TrainingSystem"
                 )
+            
+        return x
 
     def concat_labels(self, data1: Any, data2: Any) -> Any:
         """Concatenate the transformed labels. Will use concat method if not overridden.

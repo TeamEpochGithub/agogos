@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from dataclasses import field
 from typing import Any
 from agogos._core._system import System
 from agogos.transformer import Transformer
@@ -8,9 +9,7 @@ from agogos.transforming_system import TransformingSystem
 class ParallelTransformingSystem(System):
     """A system that transforms the input data in parallel.
 
-    :param transformers: The transformers to transform the input data."""
-
-    transformers: list[Transformer | TransformingSystem]
+    :param steps: The steps to transform the input data."""
 
     def __post_init__(self) -> None:
         """Post init method for the ParallelTransformingSystem class."""
@@ -30,7 +29,15 @@ class ParallelTransformingSystem(System):
         :return: The transformed data.
         """
         # Loop through each step and call the transform method
-        for step in self.steps:
+        for step in self.steps[:1]:
+            if isinstance(step, Transformer) or isinstance(step, TransformingSystem):
+                data = step.transform(data)
+            else:
+                raise TypeError(
+                    f"{step} is not a subclass of Transformer or TransformingSystem"
+                )
+
+        for step in self.steps[1:]:
             if isinstance(step, Transformer) or isinstance(step, TransformingSystem):
                 data = self.concat(data, step.transform(data))
             else:
