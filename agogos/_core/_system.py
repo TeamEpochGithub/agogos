@@ -8,6 +8,8 @@ from agogos._core._block import Block
 
 @dataclass
 class System:
+    """The system class is the base class for all systems. It is a collection of blocks that can be predict can be called on."""
+
     steps: list[Block] = field(default_factory=list)
 
     def __post_init__(self) -> None:

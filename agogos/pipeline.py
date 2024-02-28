@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
 
-from agogos.refining_system import RefiningSystem
 from agogos.training_system import TrainingSystem
 
 from agogos.transforming_system import TransformingSystem
@@ -15,13 +14,15 @@ class Pipeline:
     :param x_system: The system to transform the input data.
     :param y_system: The system to transform the labelled data.
     :param training_system: The system to train the data.
-    :param refining_system: The system to refine the output data.
+    :param prediction_system: The system to transform the predictions.
+    :param label_system: The system to transform the labels.
     """
 
     x_system: TransformingSystem | None = None
     y_system: TransformingSystem | None = None
     training_system: TrainingSystem | None = None
-    refining_system: RefiningSystem | None = None
+    prediction_system: TransformingSystem | None = None
+    label_system: TransformingSystem | None = None
 
     def __post_init__(self) -> None:
         """Post init method for the Pipeline class."""
@@ -40,8 +41,10 @@ class Pipeline:
             y = self.y_system.transform(y)
         if self.training_system is not None:
             x, y = self.training_system.train(x, y)
-        if self.refining_system is not None:
-            y = self.refining_system.predict(y)
+        if self.prediction_system is not None:
+            x = self.prediction_system.transform(x)
+        if self.label_system is not None:
+            y = self.label_system.transform(y)
 
         return x, y
 
@@ -55,8 +58,8 @@ class Pipeline:
             x = self.x_system.transform(x)
         if self.training_system is not None:
             x = self.training_system.predict(x)
-        if self.y_system is not None:
-            x = self.y_system.transform(x)
+        if self.prediction_system is not None:
+            x = self.prediction_system.transform(x)
 
         return x
 
@@ -81,11 +84,18 @@ class Pipeline:
             training_hash = self.training_system.get_hash()
             if training_hash != "":
                 self._hash = hash(self._hash + training_hash)
-        if self.refining_system is not None:
-            self.refining_system._set_hash(self._hash)
-            refining_hash = self.refining_system.get_hash()
-            if refining_hash != "":
-                self._hash = hash(self._hash + refining_hash)
+
+        predlabel_hash = ""
+        if self.prediction_system is not None:
+            predlabel_hash += self.prediction_system.get_hash()
+        if self.label_system is not None:
+            predlabel_hash += self.label_system.get_hash()
+
+        if predlabel_hash != "":
+            if self._hash == "":
+                self._hash = predlabel_hash
+            else:
+                self._hash = hash(self._hash + predlabel_hash)
 
     def get_hash(self) -> str:
         """Get the hash of the pipeline.

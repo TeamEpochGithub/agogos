@@ -5,7 +5,7 @@ from agogos._core._block import Block
 
 
 class Transformer(Block):
-    """The transformer block transforms the data it could be x or y data."""
+    """The transformer block transforms the data it could be x or y data. Override the transform method to implement"""
 
     @abstractmethod
     def transform(self, data: Any) -> Any:
