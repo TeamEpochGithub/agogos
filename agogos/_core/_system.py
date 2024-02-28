@@ -17,7 +17,7 @@ class System:
         self._set_hash("")
 
     @abstractmethod
-    def predict(self, x: Any) -> Any:
+    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any:
         """Predict the output of the system.
 
         :param x: The input to the system.

@@ -66,11 +66,7 @@ class TestPipeline:
         x_system = TransformingSystem()
         y_system = TransformingSystem()
         training_system = TrainingSystem()
-        pipeline = Pipeline(
-            x_sys=x_system, 
-            y_sys=y_system, 
-            train_sys=training_system
-        )
+        pipeline = Pipeline(x_sys=x_system, y_sys=y_system, train_sys=training_system)
         assert pipeline.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
     def test_pipeline_train_1_x_transform_block(self):

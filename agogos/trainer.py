@@ -8,7 +8,7 @@ class Trainer(Block):
     """The trainer block is for blocks that need the x and y data."""
 
     @abstractmethod
-    def train(self, x: Any, y: Any) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **kwargs: Any) -> tuple[Any, Any]:
         """Train the block.
 
         :param x: The input data.
@@ -18,7 +18,7 @@ class Trainer(Block):
         )
 
     @abstractmethod
-    def predict(self, x: Any) -> Any:
+    def predict(self, x: Any, **kwargs: Any) -> Any:
         """Predict the target variable.
 
         :param x: The input data.
