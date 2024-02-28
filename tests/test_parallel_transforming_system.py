@@ -4,8 +4,7 @@ from agogos.transforming_system import TransformingSystem
 import pytest
 
 
-class TestParallelTransformingSystem():
-
+class TestParallelTransformingSystem:
     def test_parallel_transforming_system(self):
         # Create an instance of the system
         system = ParallelTransformingSystem()
@@ -20,16 +19,16 @@ class TestParallelTransformingSystem():
 
         system = ParallelTransformingSystem(steps=[transformer1, transformer2])
         assert system is not None
-        
+
     def test_parallel_transforming_system_transform(self):
         class transformer(Transformer):
             def transform(self, data):
                 return data
-        
+
         class pts(ParallelTransformingSystem):
             def concat(self, data1, data2):
                 return data1 + data2
-            
+
         t1 = transformer()
 
         system = pts(steps=[t1])
@@ -37,15 +36,15 @@ class TestParallelTransformingSystem():
         assert system is not None
         assert system.transform([1, 2, 3]) == [1, 2, 3]
 
-    def test_parallel_transforming_system_transformers(self):
+    def test_pts_transformers_transform(self):
         class transformer(Transformer):
             def transform(self, data):
                 return data
-            
+
         class pts(ParallelTransformingSystem):
             def concat(self, data1, data2):
                 return data1 + data2
-        
+
         t1 = transformer()
         t2 = transformer()
 
@@ -75,6 +74,7 @@ class TestParallelTransformingSystem():
         class transformer(Transformer):
             def transform(self, data):
                 return data
+
         t1 = transformer()
         t2 = ParallelTransformingSystem()
         system.steps = [t1, t2]

@@ -73,7 +73,7 @@ class ParallelTrainingSystem(System):
                 raise TypeError(
                     f"{trainer} is not a subclass of Trainer or TrainingSystem"
                 )
-            
+
         return x
 
     def concat_labels(self, data1: Any, data2: Any) -> Any:

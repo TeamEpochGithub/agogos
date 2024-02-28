@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from dataclasses import field
 from typing import Any
 from agogos._core._system import System
 from agogos.transformer import Transformer

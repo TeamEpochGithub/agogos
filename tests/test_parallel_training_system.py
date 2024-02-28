@@ -4,14 +4,13 @@ from agogos.training_system import TrainingSystem
 import pytest
 
 
-class TestParallelTrainingSystem():
-
-    def test_PTrainSys(self):
+class TestParallelTrainingSystem:
+    def test_PTrainSys_init(self):
         system = ParallelTrainingSystem()
 
         assert system is not None
 
-    def test_PTrainSys_trainers(self):
+    def test_PTrainSys_init_trainers(self):
         t1 = Trainer()
         t2 = TrainingSystem()
 
@@ -42,21 +41,24 @@ class TestParallelTrainingSystem():
         class trainer(Trainer):
             def train(self, x, y):
                 return x, y
-            
+
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2):
                 return data1 + data2
 
             def concat_labels(self, data1, data2):
                 return data1 + data2
-        
+
         t1 = trainer()
         t2 = trainer()
 
         system = pts(steps=[t1, t2])
 
         assert system is not None
-        assert system.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3, 1, 2, 3], [1, 2, 3, 1, 2, 3])
+        assert system.train([1, 2, 3], [1, 2, 3]) == (
+            [1, 2, 3, 1, 2, 3],
+            [1, 2, 3, 1, 2, 3],
+        )
 
     def test_PTrainSys_predict(self):
         class trainer(Trainer):
@@ -78,16 +80,16 @@ class TestParallelTrainingSystem():
         class trainer(Trainer):
             def predict(self, x):
                 return x
-            
+
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2):
                 return data1 + data2
-        
+
         t1 = trainer()
         t2 = trainer()
 
         system = pts(steps=[t1, t2])
-        
+
         assert system is not None
         assert system.predict([1, 2, 3]) == [1, 2, 3, 1, 2, 3]
 
@@ -108,15 +110,17 @@ class TestParallelTrainingSystem():
 
         with pytest.raises(TypeError):
             system.predict([1, 2, 3])
-    
+
     def test_PTrainSys_step_2_changed(self):
         system = ParallelTrainingSystem()
 
         class trainer(Trainer):
             def train(self, x, y):
                 return x, y
+
             def predict(self, x):
                 return x
+
         t1 = trainer()
         t2 = ParallelTrainingSystem()
         system.steps = [t1, t2]
@@ -126,4 +130,3 @@ class TestParallelTrainingSystem():
 
         with pytest.raises(TypeError):
             system.predict([1, 2, 3])
-            
