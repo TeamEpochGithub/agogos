@@ -11,8 +11,8 @@ class TrainingSystem(System):
 
         # Assert all steps are a subclass of Trainer
         for step in self.steps:
-            assert issubclass(
-                step.__class__, Trainer
+            assert issubclass(step.__class__, Trainer) or issubclass(
+                step.__class__, TrainingSystem
             ), f"{step} is not a subclass of Trainer"
 
         super().__post_init__()

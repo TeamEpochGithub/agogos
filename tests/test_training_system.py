@@ -46,6 +46,17 @@ class TestTrainingSystem:
         training_system = TrainingSystem(steps=[block1])
         assert training_system.predict([1, 2, 3]) == [1, 2, 3]
 
+    def test_trainsys_predict_with_trainer_and_trainsys(self):
+        class SubTrainer(Trainer):
+            def predict(self, x):
+                return x
+
+        block1 = SubTrainer()
+        block2 = SubTrainer()
+        block3 = TrainingSystem(steps=[block1, block2])
+        training_system = TrainingSystem(steps=[block1, block2, block3])
+        assert training_system.predict([1, 2, 3]) == [1, 2, 3]
+
     def test_training_system_train(self):
         class SubTrainer(Trainer):
             def train(self, x, y):
@@ -53,6 +64,17 @@ class TestTrainingSystem:
 
         block1 = SubTrainer()
         training_system = TrainingSystem(steps=[block1])
+        assert training_system.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
+
+    def test_traiinsys_train_with_trainer_and_trainsys(self):
+        class SubTrainer(Trainer):
+            def train(self, x, y):
+                return x, y
+
+        block1 = SubTrainer()
+        block2 = SubTrainer()
+        block3 = TrainingSystem(steps=[block1, block2])
+        training_system = TrainingSystem(steps=[block1, block2, block3])
         assert training_system.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
     def test_training_system_steps_changed_train(self):
