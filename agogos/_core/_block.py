@@ -4,7 +4,6 @@ from joblib import hash
 from agogos._core._base import _Base
 
 
-
 class _Block(_Base):
     """A block in the machine learning pipeline."""
 

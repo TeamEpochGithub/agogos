@@ -5,6 +5,7 @@ from joblib import hash
 
 from agogos._core._base import _Base
 
+
 @dataclass
 class _System(_Base):
     """The system class is the base class for all systems. It is a collection of blocks that can be predict can be called on."""

@@ -1,8 +1,8 @@
 import pytest
 from agogos._core._base import _Base
 
-class Test_Base():
 
+class Test_Base:
     def test_init(self):
         with pytest.raises(NotImplementedError):
             _Base()
@@ -13,4 +13,4 @@ class Test_Base():
 
     def test_set_hash(self):
         with pytest.raises(NotImplementedError):
-            _Base()._set_hash('prev_hash')
+            _Base()._set_hash("prev_hash")

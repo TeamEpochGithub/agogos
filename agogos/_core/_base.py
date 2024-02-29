@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from dataclasses import dataclass
+from joblib import hash
 
 
 @dataclass
@@ -20,7 +21,7 @@ class _Base:
         raise NotImplementedError(
             f"{self.__class__.__name__} does not implement _set_hash method."
         )
-    
+
     def get_hash(self) -> str:
         """Get the hash of the block.
 
