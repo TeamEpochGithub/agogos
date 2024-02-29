@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from typing import Any
 
-from agogos._core._block import Block
+from agogos._core._block import _Block
 
 
-class Trainer(Block):
+class Trainer(_Block):
     """The trainer block is for blocks that need the x and y data."""
 
     @abstractmethod

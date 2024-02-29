@@ -1,23 +1,23 @@
-from agogos._core._block import Block
+from agogos._core._block import _Block
 
 
 class TestBlock:
     def test_block_init(self):
-        block = Block()
+        block = _Block()
         assert block is not None
 
     def test_block_set_hash(self):
-        block = Block()
+        block = _Block()
         block._set_hash("")
         hash1 = block.get_hash()
-        assert hash1 == "dae14fc4779a593026f01ebaade73e3a"
+        assert hash1 == "04714d9ee40c9baff8c528ed982a103c"
         block._set_hash(hash1)
         hash2 = block.get_hash()
-        assert hash2 == "029df394f68d2e6c61daf1c0c66afad0"
+        assert hash2 == "83196595c42f8eff9218c0ac8f80faf0"
         assert hash1 != hash2
 
     def test_block_get_hash(self):
-        block = Block()
+        block = _Block()
         block._set_hash("")
         hash1 = block.get_hash()
-        assert hash1 == "dae14fc4779a593026f01ebaade73e3a"
+        assert hash1 == "04714d9ee40c9baff8c528ed982a103c"

@@ -1,11 +1,11 @@
 from abc import abstractmethod
 from typing import Any
-from agogos._core._system import System
+from agogos._core._system import _System
 from agogos.transformer import Transformer
 from agogos.transforming_system import TransformingSystem
 
 
-class ParallelTransformingSystem(System):
+class ParallelTransformingSystem(_System):
     """A system that transforms the input data in parallel.
 
     :param steps: The steps to transform the input data."""
