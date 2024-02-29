@@ -4,7 +4,10 @@ from agogos.trainer import Trainer
 
 
 class TrainingSystem(System):
-    """A system that trains on the input data and labels."""
+    """A system that trains on the input data and labels.
+    
+    :param steps: The steps in the system.
+    """
 
     def __post_init__(self) -> None:
         """Post init method for the TrainingSystem class."""

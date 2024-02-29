@@ -8,7 +8,10 @@ from agogos._core._block import Block
 
 @dataclass
 class System:
-    """The system class is the base class for all systems. It is a collection of blocks that can be predict can be called on."""
+    """The system class is the base class for all systems. It is a collection of blocks that can be predict can be called on.
+    
+    :param steps: The steps in the system.
+    """
 
     steps: list[Block] = field(default_factory=list)
 
@@ -21,6 +24,7 @@ class System:
         """Predict the output of the system.
 
         :param x: The input to the system.
+        :param pred_args: The arguments to pass to the predict method.
         :return: The output of the system.
         """
         raise NotImplementedError(

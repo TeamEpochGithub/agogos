@@ -4,7 +4,9 @@ from agogos.transformer import Transformer
 
 
 class TransformingSystem(System):
-    """A system that transforms the input data."""
+    """A system that transforms the input data.
+    
+    :param steps: The steps in the system."""
 
     def __post_init__(self) -> None:
         """Post init method for the TransformingSystem class."""
