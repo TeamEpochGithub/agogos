@@ -1,20 +1,15 @@
 from abc import abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import field, dataclass
 from typing import Any
 from joblib import hash
 
-from agogos._core._block import Block
-
+from agogos._core._base import _Base
 
 @dataclass
-class System:
+class _System(_Base):
     """The system class is the base class for all systems. It is a collection of blocks that can be predict can be called on."""
 
-    steps: list[Block] = field(default_factory=list)
-
-    def __post_init__(self) -> None:
-        """Post init method for the System class."""
-        self._set_hash("")
+    steps: list[_Base] = field(default_factory=list)
 
     @abstractmethod
     def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any:
@@ -35,11 +30,4 @@ class System:
         self._hash = prev_hash
 
         for step in self.steps:
-            self._hash = hash(self._hash + step.get_hash())
-
-    def get_hash(self) -> str:
-        """Get the hash of the block.
-
-        :return: The hash of the block.
-        """
-        return self._hash
+            self._hash = hash(self.get_hash() + step.get_hash())

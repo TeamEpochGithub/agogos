@@ -28,4 +28,5 @@ cd ../
 
 ```shell
 python -m build
+twine upload dist/*
 ```

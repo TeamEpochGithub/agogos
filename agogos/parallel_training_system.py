@@ -1,11 +1,11 @@
 from abc import abstractmethod
 from typing import Any
-from agogos._core._system import System
+from agogos._core._system import _System
 from agogos.trainer import Trainer
 from agogos.training_system import TrainingSystem
 
 
-class ParallelTrainingSystem(System):
+class ParallelTrainingSystem(_System):
     """A system that trains the input data in parallel.
 
     :param steps: The steps to train the input data.
