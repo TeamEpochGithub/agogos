@@ -4,7 +4,32 @@ from agogos.transformer import Transformer
 
 
 class TransformingSystem(_System):
-    """A system that transforms the input data."""
+    """A system that transforms the input data.
+
+    ### Parameters:
+    - steps (list[Transformer | TransformingSystem | ParallelTransformingSystem]): The steps in the system.
+
+    Implements the following methods:
+    ```python
+    def transform(self, x: Any, transform_args: dict[str, Any] = {}) -> Any: # Transform the input data.
+
+    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+
+    def get_hash(self) -> str: # Get the hash of the system.
+    ```
+
+    Usage:
+    ```python
+    from agogos.transforming_system import TransformingSystem
+
+    transformer_1 = CustomTransformer()
+    transformer_2 = CustomTransformer()
+
+    transforming_system = TransformingSystem(steps=[transformer_1, transformer_2])
+    transformed_data = transforming_system.transform(data)
+    predictions = transforming_system.predict(data)
+    ```
+    """
 
     def __post_init__(self) -> None:
         """Post init method for the TransformingSystem class."""

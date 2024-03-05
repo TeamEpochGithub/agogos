@@ -8,7 +8,39 @@ from agogos.training_system import TrainingSystem
 class ParallelTrainingSystem(_System):
     """A system that trains the input data in parallel.
 
-    :param steps: The steps to train the input data.
+    ### Parameters:
+    - steps (list[Trainer | TrainingSystem | ParallelTrainingSystem]): The steps in the system.
+
+    ### Methods:
+    ```python
+    @abstractmethod
+    def concat(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed data.
+
+    def train(self, x: Any, y: Any) -> tuple[Any, Any]: # Train the system.
+
+    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+
+    def concat_labels(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed labels.
+
+    def get_hash(self) -> str: # Get the hash of the system.
+    ```
+
+    ### Usage:
+    ```python
+    from agogos.parallel_training_system import ParallelTrainingSystem
+
+    trainer_1 = CustomTrainer()
+    trainer_2 = CustomTrainer()
+
+    class CustomParallelTrainingSystem(ParallelTrainingSystem):
+        def concat(self, data1: Any, data2: Any) -> Any:
+            # Concatenate the transformed data.
+            return data1 + data2
+
+    training_system = CustomParallelTrainingSystem(steps=[trainer_1, trainer_2])
+    trained_x, trained_y = training_system.train(x, y)
+    predictions = training_system.predict(x)
+    ```
     """
 
     def __post_init__(self) -> None:
