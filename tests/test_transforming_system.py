@@ -49,11 +49,15 @@ class TestTransformingSystem:
     def test_transforming_system_transform_1_block_with_args(self):
         class SubTransformer(Transformer):
             def transform(self, data):
-                return data 
-        
+                return data
+
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
-        assert transforming_system.transform([1, 2, 3], {"SubTransformer": {}}) == [1, 2, 3]
+        assert transforming_system.transform([1, 2, 3], {"SubTransformer": {}}) == [
+            1,
+            2,
+            3,
+        ]
 
     def test_transforming_system_transform_2_blocks(self):
         class SubTransformer(Transformer):
@@ -76,7 +80,6 @@ class TestTransformingSystem:
         transforming_system = TransformingSystem(steps=[block2])
         result = transforming_system.transform(np.array([1, 2, 3]))
         assert np.array_equal(result, np.array([2, 4, 6]))
-
 
     def test_transforming_system_transform_with_args(self):
         class SubTransformer(Transformer):

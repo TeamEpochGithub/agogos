@@ -8,7 +8,26 @@ from agogos._core._base import _Base
 
 @dataclass
 class _System(_Base):
-    """The _System class is the base class for all systems."""
+    """The _System class is the base class for all systems.
+
+    Implements the following methods:
+    ```python
+    def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
+
+    @abstractmethod
+    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+    ```
+
+    Usage:
+    ```python
+    from agogos._core._system import _System
+
+    class System(_System):
+        def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any:
+            # Predict the output of the system.
+            return x
+    ```
+    """
 
     steps: list[_Base] = field(default_factory=list)
 
