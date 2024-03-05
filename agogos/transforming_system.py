@@ -1,12 +1,10 @@
 from typing import Any
-from agogos._core._system import System
+from agogos._core._system import _System
 from agogos.transformer import Transformer
 
 
-class TransformingSystem(System):
-    """A system that transforms the input data.
-    
-    :param steps: The steps in the system."""
+class TransformingSystem(_System):
+    """A system that transforms the input data."""
 
     def __post_init__(self) -> None:
         """Post init method for the TransformingSystem class."""

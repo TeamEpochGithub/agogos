@@ -1,13 +1,10 @@
 from typing import Any
-from agogos._core._system import System
+from agogos._core._system import _System
 from agogos.trainer import Trainer
 
 
-class TrainingSystem(System):
-    """A system that trains on the input data and labels.
-    
-    :param steps: The steps in the system.
-    """
+class TrainingSystem(_System):
+    """A system that trains on the input data and labels."""
 
     def __post_init__(self) -> None:
         """Post init method for the TrainingSystem class."""

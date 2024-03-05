@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from typing import Any
 
-from agogos._core._block import Block
+from agogos._core._block import _Block
 
 
-class Transformer(Block):
+class Transformer(_Block):
     """The transformer block transforms the data it could be x or y data. Override the transform method to implement"""
 
     @abstractmethod
