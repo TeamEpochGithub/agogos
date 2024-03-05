@@ -7,12 +7,14 @@ from agogos._core._base import _Base
 class _Block(_Base):
     """The _Block class is the base class for all blocks.
 
-    Implements the following methods:
+    ### Methods:
     ```python
+    def get_hash(self) -> str: # Get the hash of the block.
+
     def _set_hash(self, prev_hash: str) -> None: # Set the hash of the block.
     ```
 
-    Usage:
+    ### Usage:
     ```python
     from agogos._core._block import _Block
 

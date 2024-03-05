@@ -10,15 +10,20 @@ from agogos._core._base import _Base
 class _System(_Base):
     """The _System class is the base class for all systems.
 
-    Implements the following methods:
-    ```python
-    def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
+    ### Parameters:
+    - steps (list[_Base]): The steps in the system.
 
+    ### Methods:
+    ```python
     @abstractmethod
     def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+
+    def get_hash(self) -> str: # Get the hash of the system.
+
+    def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
     ```
 
-    Usage:
+    ### Usage:
     ```python
     from agogos._core._system import _System
 

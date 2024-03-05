@@ -5,7 +5,29 @@ from agogos._core._block import _Block
 
 
 class Transformer(_Block):
-    """The transformer block transforms the data it could be x or y data. Override the transform method to implement"""
+    """The transformer block transforms any data it could be x or y data.
+
+    ### Methods:
+    ```python
+    @abstractmethod
+    def transform(self, data: Any, **kwargs: Any) -> Any: # Transform the input data.
+
+    def get_hash(self) -> str: # Get the hash of the block.
+    ```
+
+    ### Usage:
+    ```python
+    from agogos.transformer import Transformer
+
+    class MyTransformer(Transformer):
+        def transform(self, data: Any, **kwargs: Any) -> Any:
+            # Transform the input data.
+            return data
+
+    my_transformer = MyTransformer()
+    transformed_data = my_transformer.transform(data)
+    ```
+    """
 
     @abstractmethod
     def transform(self, data: Any, **kwargs: Any) -> Any:

@@ -7,7 +7,7 @@ from joblib import hash
 class _Base:
     """The _Base class is the base class for all classes in the agogos package.
 
-    Implements the following methods:
+    ### Methods:
     ```python
     def get_hash(self) -> str: # Get the hash of the block.
 
@@ -16,7 +16,7 @@ class _Base:
         # Called by the __post_init__ method of the block.
     ```
 
-    Usage:
+    ### Usage:
     ```python
     from agogos._core._base import _Base
 

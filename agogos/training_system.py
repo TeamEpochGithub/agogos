@@ -4,7 +4,32 @@ from agogos.trainer import Trainer
 
 
 class TrainingSystem(_System):
-    """A system that trains on the input data and labels."""
+    """A system that trains on the input data and labels.
+
+    ### Parameters:
+    - steps (list[Trainer | TrainingSystem | ParallelTrainingSystem]): The steps in the system.
+
+    ### Methods:
+    ```python
+    def train(self, x: Any, y: Any, train_args: dict[str, Any] = {}) -> tuple[Any, Any]: # Train the system.
+
+    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+
+    def get_hash(self) -> str: # Get the hash of the system.
+    ```
+
+    ### Usage:
+    ```python
+    from agogos.training_system import TrainingSystem
+
+    trainer_1 = CustomTrainer()
+    trainer_2 = CustomTrainer()
+
+    training_system = TrainingSystem(steps=[trainer_1, trainer_2])
+    trained_x, trained_y = training_system.train(x, y)
+    predictions = training_system.predict(x)
+    ```
+    """
 
     def __post_init__(self) -> None:
         """Post init method for the TrainingSystem class."""
