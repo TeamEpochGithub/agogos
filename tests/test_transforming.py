@@ -1,4 +1,5 @@
 import pytest
+from agogos.training import Trainer
 from agogos.transforming import (
     Transformer,
     TransformingSystem,
@@ -77,7 +78,7 @@ class TestTransformingSystem:
 
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
-        assert transforming_system.transform([1, 2, 3], {"SubTransformer": {}}) == [
+        assert transforming_system.transform([1, 2, 3], **{"SubTransformer": {}}) == [
             1,
             2,
             3,
@@ -113,7 +114,7 @@ class TestTransformingSystem:
         block1 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1])
         result = transforming_system.transform(
-            np.array([1, 2, 3]), {"SubTransformer": {"multiplier": 2}}
+            np.array([1, 2, 3]), **{"SubTransformer": {"multiplier": 2}}
         )
         assert np.array_equal(result, np.array([2, 4, 6]))
 
@@ -126,7 +127,7 @@ class TestTransformingSystem:
         block2 = SubTransformer()
         transforming_system = TransformingSystem(steps=[block1, block2])
         result = transforming_system.transform(
-            np.array([1, 2, 3]), {"SubTransformer": {"multiplier": 2}}
+            np.array([1, 2, 3]), **{"SubTransformer": {"multiplier": 2}}
         )
         assert np.array_equal(result, np.array([4, 8, 12]))
 
@@ -142,14 +143,14 @@ class TestTransformingSystem:
         transforming_system = TransformingSystem(steps=[block1, block4])
         assert np.array_equal(
             transforming_system.transform(
-                np.array([1, 2, 3]), {"SubTransformer": {"multiplier": 2}}
+                np.array([1, 2, 3]), **{"SubTransformer": {"multiplier": 2}}
             ),
             np.array([4, 8, 12]),
         )
         assert np.array_equal(
             transforming_system.transform(
                 np.array([1, 2, 3]),
-                {
+                **{
                     "TransformingSystem": {
                         "TransformingSystem": {"SubTransformer": {"multiplier": 3}}
                     }
@@ -221,7 +222,7 @@ class TestParallelTransformingSystem:
     def test_pts_step_1_changed(self):
         system = ParallelTransformingSystem()
 
-        t1 = ParallelTransformingSystem()
+        t1 = Trainer()
         system.steps = [t1]
 
         with pytest.raises(TypeError):
@@ -235,7 +236,7 @@ class TestParallelTransformingSystem:
                 return data
 
         t1 = transformer()
-        t2 = ParallelTransformingSystem()
+        t2 = Trainer()
         system.steps = [t1, t2]
 
         with pytest.raises(TypeError):

@@ -21,9 +21,9 @@ class Pipeline(_Base):
 
     ### Methods:
     ```python
-    def train(self, x: Any, y: Any, train_args: dict[str, Any] = {}) -> tuple[Any, Any]: # Train the system.
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the system.
 
-    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+    def predict(self, x: Any, **pred_args) -> Any: # Predict the output of the system.
 
     def get_hash(self) -> str: # Get the hash of the pipeline.
     ```
@@ -50,7 +50,7 @@ class Pipeline(_Base):
     pred_sys: TransformingSystem | None = None
     label_sys: TransformingSystem | None = None
 
-    def train(self, x: Any, y: Any, train_args: dict[str, Any] = {}) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
         """Train the system.
 
         :param x: The input to the system.
@@ -59,40 +59,19 @@ class Pipeline(_Base):
         :return: The input and output of the system.
         """
         if self.x_sys is not None:
-            x_sys_args = (
-                train_args["x_sys"] if train_args and "x_sys" in train_args else {}
-            )
-            x = self.x_sys.transform(x, x_sys_args)
+            x = self.x_sys.transform(x, **train_args.get("x_sys", {}))
         if self.y_sys is not None:
-            y_sys_args = (
-                train_args["y_sys"] if train_args and "y_sys" in train_args else {}
-            )
-            y = self.y_sys.transform(y, y_sys_args)
+            y = self.y_sys.transform(y, **train_args.get("y_sys", {}))
         if self.train_sys is not None:
-            train_sys_args = (
-                train_args["train_sys"]
-                if train_args and "train_sys" in train_args
-                else {}
-            )
-            x, y = self.train_sys.train(x, y, train_sys_args)
+            x, y = self.train_sys.train(x, y, **train_args.get("train_sys", {}))
         if self.pred_sys is not None:
-            pred_sys_args = (
-                train_args["pred_sys"]
-                if train_args and "pred_sys" in train_args
-                else {}
-            )
-            x = self.pred_sys.transform(x, pred_sys_args)
+            x = self.pred_sys.transform(x, **train_args.get("pred_sys", {}))
         if self.label_sys is not None:
-            label_sys_args = (
-                train_args["label_sys"]
-                if train_args and "label_sys" in train_args
-                else {}
-            )
-            y = self.label_sys.transform(y, label_sys_args)
+            y = self.label_sys.transform(y, **train_args.get("label_sys", {}))
 
         return x, y
 
-    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any:
+    def predict(self, x: Any, **pred_args: Any) -> Any:
         """Predict the output of the system.
 
         :param x: The input to the system.
@@ -100,20 +79,11 @@ class Pipeline(_Base):
         :return: The output of the system.
         """
         if self.x_sys is not None:
-            x_sys_args = (
-                pred_args["x_sys"] if pred_args and "x_sys" in pred_args else {}
-            )
-            x = self.x_sys.transform(x, x_sys_args)
+            x = self.x_sys.transform(x, **pred_args.get("x_sys", {}))
         if self.train_sys is not None:
-            train_sys_args = (
-                pred_args["train_sys"] if pred_args and "train_sys" in pred_args else {}
-            )
-            x = self.train_sys.predict(x, train_sys_args)
+            x = self.train_sys.predict(x, **pred_args.get("train_sys", {}))
         if self.pred_sys is not None:
-            pred_sys_args = (
-                pred_args["pred_sys"] if pred_args and "pred_sys" in pred_args else {}
-            )
-            x = self.pred_sys.transform(x, pred_sys_args)
+            x = self.pred_sys.transform(x, **pred_args.get("pred_sys", {}))
 
         return x
 
