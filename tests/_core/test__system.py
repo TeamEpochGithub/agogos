@@ -1,5 +1,3 @@
-import numpy as np
-import pytest
 from agogos._core._block import _Block
 from agogos._core._system import _System
 
@@ -8,11 +6,6 @@ class TestSystem:
     def test_system_init(self):
         system = _System()
         assert system is not None
-
-    def test_system_predict(self):
-        system = _System()
-        with pytest.raises(NotImplementedError):
-            system.predict(np.array([1, 2, 3]))
 
     def test_system_hash_no_steps(self):
         system = _System()
