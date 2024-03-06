@@ -1,4 +1,4 @@
-from agogos._core._block import _Block
+from agogos._core import _Block
 
 
 class TestBlock:

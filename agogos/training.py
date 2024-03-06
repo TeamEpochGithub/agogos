@@ -1,9 +1,145 @@
 from abc import abstractmethod
 from typing import Any
-from agogos._core._system import _System
-from agogos.trainer import Trainer
-from agogos.training_system import TrainingSystem
 
+from agogos._core import _Block, _System
+
+
+class Trainer(_Block):
+    """The trainer block is for blocks that need to train on two inputs and predict on one.
+
+    ### Methods:
+    ```python
+    @abstractmethod
+    def train(self, x: Any, y: Any, **kwargs: Any) -> tuple[Any, Any]: # Train the block.
+
+    @abstractmethod
+    def predict(self, x: Any, **kwargs: Any) -> Any: # Predict the target variable.
+
+    def get_hash(self) -> str: # Get the hash of the block.
+    ```
+
+    ### Usage:
+    ```python
+    from agogos.trainer import Trainer
+
+    class MyTrainer(Trainer):
+
+        def train(self, x: Any, y: Any, **kwargs: Any) -> tuple[Any, Any]:
+            # Train the block.
+            return x, y
+
+        def predict(self, x: Any, **kwargs: Any) -> Any:
+            # Predict the target variable.
+            return x
+
+    my_trainer = MyTrainer()
+    predictions, labels = my_trainer.train(x, y)
+    predictions = my_trainer.predict(x)
+    ```
+    """
+
+    @abstractmethod
+    def train(self, x: Any, y: Any, **kwargs: Any) -> tuple[Any, Any]:
+        """Train the block.
+
+        :param x: The input data.
+        :param y: The target variable."""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement train method."
+        )
+
+    @abstractmethod
+    def predict(self, x: Any, **kwargs: Any) -> Any:
+        """Predict the target variable.
+
+        :param x: The input data.
+        :return: The predictions."""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement predict method."
+        )
+
+class TrainingSystem(_System):
+    """A system that trains on the input data and labels.
+
+    ### Parameters:
+    - steps (list[Trainer | TrainingSystem | ParallelTrainingSystem]): The steps in the system.
+
+    ### Methods:
+    ```python
+    def train(self, x: Any, y: Any, train_args: dict[str, Any] = {}) -> tuple[Any, Any]: # Train the system.
+
+    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+
+    def get_hash(self) -> str: # Get the hash of the system.
+    ```
+
+    ### Usage:
+    ```python
+    from agogos.training_system import TrainingSystem
+
+    trainer_1 = CustomTrainer()
+    trainer_2 = CustomTrainer()
+
+    training_system = TrainingSystem(steps=[trainer_1, trainer_2])
+    trained_x, trained_y = training_system.train(x, y)
+    predictions = training_system.predict(x)
+    ```
+    """
+
+    def __post_init__(self) -> None:
+        """Post init method for the TrainingSystem class."""
+
+        # Assert all steps are a subclass of Trainer
+        for step in self.steps:
+            assert issubclass(step.__class__, Trainer) or issubclass(
+                step.__class__, TrainingSystem
+            ), f"{step} is not a subclass of Trainer"
+
+        super().__post_init__()
+
+    def predict(self, x: Any, pred_args: dict[str, Any] | None = None) -> Any:
+        """Predict the output of the system.
+
+        :param x: The input to the system.
+        :return: The output of the system.
+        """
+
+        # Loop through each step and call the predict method
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            step_pred_args = (
+                pred_args[step_name] if pred_args and step_name in pred_args else {}
+            )
+            if isinstance(step, Trainer):
+                x = step.predict(x, **step_pred_args)
+            elif isinstance(step, TrainingSystem):
+                x = step.predict(x, step_pred_args)
+            else:
+                raise TypeError(f"{step} is not a subclass of Trainer")
+
+        return x
+
+    def train(self, x: Any, y: Any, train_args: dict[str, Any] = {}) -> tuple[Any, Any]:
+        """Train the system.
+
+        :param x: The input to the system.
+        :param y: The output of the system.
+        :return: The input and output of the system."""
+
+        # Loop through each step and call the train method
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            step_train_args = (
+                train_args[step_name] if train_args and step_name in train_args else {}
+            )
+            if isinstance(step, Trainer):
+                x, y = step.train(x, y, **step_train_args)
+            elif isinstance(step, TrainingSystem):
+                x, y = step.train(x, y, step_train_args)
+            else:
+                raise TypeError(f"{step} is not a subclass of Trainer")
+
+        return x, y
 
 class ParallelTrainingSystem(_System):
     """A system that trains the input data in parallel.

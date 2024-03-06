@@ -1,9 +1,7 @@
 import numpy as np
 from agogos.pipeline import Pipeline
-from agogos.training_system import TrainingSystem
-from agogos.transformer import Transformer
-from agogos.transforming_system import TransformingSystem
-
+from agogos.transforming import Transformer, TransformingSystem
+from agogos.training import Trainer, TrainingSystem
 
 class TestPipeline:
     def test_pipeline_init(self):

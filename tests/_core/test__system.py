@@ -1,5 +1,4 @@
-from agogos._core._block import _Block
-from agogos._core._system import _System
+from agogos._core import _System, _Block 
 
 
 class TestSystem:

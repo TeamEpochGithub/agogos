@@ -1,6 +1,6 @@
 import pytest
 
-from agogos.transformer import Transformer
+from agogos.transforming import Transformer
 
 
 class TestTransformer:

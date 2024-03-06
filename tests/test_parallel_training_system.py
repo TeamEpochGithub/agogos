@@ -1,6 +1,4 @@
-from agogos.parallel_training_system import ParallelTrainingSystem
-from agogos.trainer import Trainer
-from agogos.training_system import TrainingSystem
+from agogos.training import ParallelTrainingSystem, Trainer, TrainingSystem
 import pytest
 
 

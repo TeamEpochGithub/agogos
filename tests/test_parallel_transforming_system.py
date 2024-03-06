@@ -1,6 +1,4 @@
-from agogos.parallel_transforming_system import ParallelTransformingSystem
-from agogos.transformer import Transformer
-from agogos.transforming_system import TransformingSystem
+from agogos.transforming import Transformer, TransformingSystem, ParallelTransformingSystem 
 import pytest
 
 

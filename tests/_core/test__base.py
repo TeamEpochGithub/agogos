@@ -1,5 +1,5 @@
 import pytest
-from agogos._core._base import _Base
+from agogos._core import _Base
 
 
 class Test_Base:

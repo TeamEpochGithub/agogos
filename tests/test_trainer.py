@@ -1,5 +1,5 @@
 import pytest
-from agogos.trainer import Trainer
+from agogos.training import Trainer
 
 
 class TestTrainer:
