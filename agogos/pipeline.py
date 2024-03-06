@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 from typing import Any
 
-from agogos.training_system import TrainingSystem
-
-from agogos.transforming_system import TransformingSystem
+from agogos.training import TrainingSystem
+from agogos.transforming import TransformingSystem
 from joblib import hash
 
-from agogos._core._base import _Base
+from agogos._core import _Base
 
 
 @dataclass
