@@ -1,10 +1,10 @@
 [project]
 name = "agogos"
-version = "0.1.2"
+version = "0.2.0"
 authors = [
     { name = "Jasper van Selm", email = "jmvanselm@gmail.com" },
 ]
-description = "This package contains the code for creating a ml pipeline"
+description = "Package that creates the underlying construction of a machine learning pipeline"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
