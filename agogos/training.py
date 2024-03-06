@@ -10,10 +10,10 @@ class Trainer(_Block):
     ### Methods:
     ```python
     @abstractmethod
-    def train(self, x: Any, y: Any, **kwargs: Any) -> tuple[Any, Any]: # Train the block.
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the block.
 
     @abstractmethod
-    def predict(self, x: Any, **kwargs: Any) -> Any: # Predict the target variable.
+    def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the target variable.
 
     def get_hash(self) -> str: # Get the hash of the block.
     ```
@@ -24,11 +24,11 @@ class Trainer(_Block):
 
     class MyTrainer(Trainer):
 
-        def train(self, x: Any, y: Any, **kwargs: Any) -> tuple[Any, Any]:
+        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
             # Train the block.
             return x, y
 
-        def predict(self, x: Any, **kwargs: Any) -> Any:
+        def predict(self, x: Any, **pred_args: Any) -> Any:
             # Predict the target variable.
             return x
 
@@ -39,7 +39,7 @@ class Trainer(_Block):
     """
 
     @abstractmethod
-    def train(self, x: Any, y: Any, **kwargs: Any) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
         """Train the block.
 
         :param x: The input data.
@@ -49,7 +49,7 @@ class Trainer(_Block):
         )
 
     @abstractmethod
-    def predict(self, x: Any, **kwargs: Any) -> Any:
+    def predict(self, x: Any, **pred_args: Any) -> Any:
         """Predict the target variable.
 
         :param x: The input data.
