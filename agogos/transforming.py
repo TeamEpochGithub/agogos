@@ -40,6 +40,7 @@ class Transformer(_Block):
             f"{self.__class__.__name__} does not implement transform method."
         )
 
+
 class TransformingSystem(_System):
     """A system that transforms the input data.
 
@@ -100,6 +101,7 @@ class TransformingSystem(_System):
                 raise TypeError(f"{step} is not a subclass of Transformer")
 
         return x
+
 
 class ParallelTransformingSystem(_System):
     """A system that transforms the input data in parallel.

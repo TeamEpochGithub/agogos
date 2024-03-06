@@ -3,6 +3,7 @@ from dataclasses import field, dataclass
 from joblib import hash
 from abc import abstractmethod
 
+
 @dataclass
 class _Base:
     """The _Base class is the base class for all classes in the agogos package.

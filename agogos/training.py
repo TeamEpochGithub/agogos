@@ -58,6 +58,7 @@ class Trainer(_Block):
             f"{self.__class__.__name__} does not implement predict method."
         )
 
+
 class TrainingSystem(_System):
     """A system that trains on the input data and labels.
 
@@ -140,6 +141,7 @@ class TrainingSystem(_System):
                 raise TypeError(f"{step} is not a subclass of Trainer")
 
         return x, y
+
 
 class ParallelTrainingSystem(_System):
     """A system that trains the input data in parallel.
