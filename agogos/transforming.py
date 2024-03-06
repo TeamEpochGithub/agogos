@@ -10,7 +10,7 @@ class Transformer(_Block):
     ### Methods:
     ```python
     @abstractmethod
-    def transform(self, data: Any, **kwargs: Any) -> Any: # Transform the input data.
+    def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
 
     def get_hash(self) -> str: # Get the hash of the block.
     ```
@@ -20,7 +20,7 @@ class Transformer(_Block):
     from agogos.transformer import Transformer
 
     class MyTransformer(Transformer):
-        def transform(self, data: Any, **kwargs: Any) -> Any:
+        def transform(self, data: Any, **transform_args: Any) -> Any:
             # Transform the input data.
             return data
 
@@ -30,11 +30,11 @@ class Transformer(_Block):
     """
 
     @abstractmethod
-    def transform(self, data: Any, **kwargs: Any) -> Any:
+    def transform(self, data: Any, **transform_args: Any) -> Any:
         """Transform the input data.
 
         :param data: The input data.
-        :param kwargs: Keyword arguments.
+        :param transform_args: Keyword arguments.
         :return: The transformed data."""
         raise NotImplementedError(
             f"{self.__class__.__name__} does not implement transform method."
@@ -49,7 +49,7 @@ class TransformingSystem(_System):
 
     Implements the following methods:
     ```python
-    def transform(self, x: Any, transform_args: dict[str, Any] = {}) -> Any: # Transform the input data.
+    def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
 
     def get_hash(self) -> str: # Get the hash of the system.
     ```
@@ -72,35 +72,37 @@ class TransformingSystem(_System):
 
         # Assert all steps are a subclass of Transformer
         for step in self.steps:
-            assert issubclass(step.__class__, Transformer) or issubclass(
-                step.__class__, TransformingSystem
+            assert (
+                issubclass(step.__class__, Transformer)
+                or issubclass(step.__class__, TransformingSystem)
+                or issubclass(step.__class__, ParallelTransformingSystem)
             ), f"{step} is not a subclass of Transformer"
 
         super().__post_init__()
 
-    def transform(self, x: Any, transform_args: dict[str, Any] = {}) -> Any:
+    def transform(self, data: Any, **transform_args: Any) -> Any:
         """Transform the input data.
 
-        :param x: The input data.
+        :param data: The input data.
         :return: The transformed data.
         """
 
         # Loop through each step and call the transform method
         for step in self.steps:
             step_name = step.__class__.__name__
-            step_transform_args = (
-                transform_args[step_name]
-                if transform_args and step_name in transform_args
-                else {}
-            )
-            if isinstance(step, Transformer):
-                x = step.transform(x, **step_transform_args)
-            elif isinstance(step, TransformingSystem):
-                x = step.transform(x, step_transform_args)
+
+            step_args = transform_args.get(step_name, {})
+
+            if (
+                isinstance(step, Transformer)
+                or isinstance(step, TransformingSystem)
+                or isinstance(step, ParallelTransformingSystem)
+            ):
+                data = step.transform(data, **step_args)
             else:
                 raise TypeError(f"{step} is not a subclass of Transformer")
 
-        return x
+        return data
 
 
 class ParallelTransformingSystem(_System):
@@ -114,7 +116,7 @@ class ParallelTransformingSystem(_System):
     @abstractmethod
     def concat(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed data.
 
-    def transform(self, x: Any) -> Any: # Transform the input data.
+    def transform(self, data: Any, **transform_args) -> Any: # Transform the input data.
 
     def get_hash(self) -> str: # Get the hash of the system.
     ```
@@ -148,28 +150,29 @@ class ParallelTransformingSystem(_System):
 
         super().__post_init__()
 
-    def transform(self, data: Any) -> Any:
+    def transform(self, data: Any, **transform_args: Any) -> Any:
         """Transform the input data.
 
         :param data: The input data.
         :return: The transformed data.
         """
         # Loop through each step and call the transform method
-        for step in self.steps[:1]:
-            if isinstance(step, Transformer) or isinstance(step, TransformingSystem):
-                data = step.transform(data)
-            else:
-                raise TypeError(
-                    f"{step} is not a subclass of Transformer or TransformingSystem"
-                )
+        for i, step in enumerate(self.steps):
+            step_name = step.__class__.__name__
 
-        for step in self.steps[1:]:
-            if isinstance(step, Transformer) or isinstance(step, TransformingSystem):
-                data = self.concat(data, step.transform(data))
+            step_args = transform_args.get(step_name, {})
+
+            if (
+                isinstance(step, Transformer)
+                or isinstance(step, TransformingSystem)
+                or isinstance(step, ParallelTransformingSystem)
+            ):
+                if i == 0:
+                    data = step.transform(data, **step_args)
+                else:
+                    data = self.concat(data, step.transform(data, **step_args))
             else:
-                raise TypeError(
-                    f"{step} is not a subclass of Transformer or TransformingSystem"
-                )
+                raise TypeError(f"{step} is not a subclass of Transformer")
 
         return data
 
