@@ -13,8 +13,6 @@ class TransformingSystem(_System):
     ```python
     def transform(self, x: Any, transform_args: dict[str, Any] = {}) -> Any: # Transform the input data.
 
-    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
-
     def get_hash(self) -> str: # Get the hash of the system.
     ```
 
@@ -65,11 +63,3 @@ class TransformingSystem(_System):
                 raise TypeError(f"{step} is not a subclass of Transformer")
 
         return x
-
-    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any:
-        """Predict the output of the system.
-
-        :param x: The input to the system.
-        :return: The output of the system.
-        """
-        return self.transform(x, transform_args=pred_args)
