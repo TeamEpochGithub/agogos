@@ -9,11 +9,11 @@ class _Base:
 
     ### Methods:
     ```python
-    def get_hash(self) -> str: # Get the hash of the block.
-
     @abstractmethod
     def _set_hash(self, prev_hash: str) -> None: # Set the hash of the block.
         # Called by the __post_init__ method of the block.
+
+    def get_hash(self) -> str: # Get the hash of the block.
     ```
 
     ### Usage:

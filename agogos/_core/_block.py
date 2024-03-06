@@ -13,17 +13,6 @@ class _Block(_Base):
 
     def _set_hash(self, prev_hash: str) -> None: # Set the hash of the block.
     ```
-
-    ### Usage:
-    ```python
-    from agogos._core._block import _Block
-
-    class Block(_Block):
-
-        def _set_hash(self, prev_hash: str) -> None:
-            # Set the hash of the block.
-            self._hash = hash(prev_hash + str(self))
-    ```
     """
 
     def _set_hash(self, prev_hash: str) -> None:
