@@ -1,5 +1,6 @@
 import pytest
 from agogos.training import Trainer, TrainingSystem, ParallelTrainingSystem
+from agogos.transforming import Transformer
 
 
 class TestTrainer:
@@ -256,7 +257,7 @@ class TestParallelTrainingSystem:
     def test_PTrainSys_step_1_changed(self):
         system = ParallelTrainingSystem()
 
-        t1 = ParallelTrainingSystem()
+        t1 = Transformer()
         system.steps = [t1]
 
         with pytest.raises(TypeError):
@@ -276,7 +277,7 @@ class TestParallelTrainingSystem:
                 return x
 
         t1 = trainer()
-        t2 = ParallelTrainingSystem()
+        t2 = Transformer()
         system.steps = [t1, t2]
 
         with pytest.raises(TypeError):
