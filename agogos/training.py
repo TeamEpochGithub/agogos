@@ -67,9 +67,9 @@ class TrainingSystem(_System):
 
     ### Methods:
     ```python
-    def train(self, x: Any, y: Any, train_args: dict[str, Any] = {}) -> tuple[Any, Any]: # Train the system.
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the system.
 
-    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+    def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the output of the system.
 
     def get_hash(self) -> str: # Get the hash of the system.
     ```
@@ -122,7 +122,7 @@ class TrainingSystem(_System):
 
         return x
 
-    def train(self, x: Any, y: Any, train_args: dict[str, Any] = {}) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
         """Train the system.
 
         :param x: The input to the system.
