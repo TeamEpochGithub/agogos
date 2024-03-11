@@ -1,4 +1,7 @@
-# The Agogos package contains implementations of ml pipeline blocks and the underlying code
+# Agogos
+
+[![PyPI Latest Release](https://img.shields.io/pypi/v/agogos.svg)](https://pypi.org/project/agogos/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/agogos.svg?label=PyPI%20downloads)](https://pypi.org/project/epochalyst/)
 
 This package contains many modules and classes necessary to construct the ml pipeline for machine learning competitions.
 
@@ -22,11 +25,4 @@ Here's a short command to make the documentation and open it in the browser:
 cd ./docs/;
 ./make.bat html; start chrome file://$PWD/_build/html/index.html
 cd ../
-```
-
-## Uploading to pypi
-
-```shell
-python -m build
-twine upload dist/*
 ```
