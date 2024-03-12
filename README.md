@@ -3,6 +3,7 @@
 </p>
 
 <h1 align="center">Agogos</h1>
+
 [![PyPI Latest Release](https://img.shields.io/pypi/v/agogos.svg)](https://pypi.org/project/agogos/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/agogos.svg?label=PyPI%20downloads)](https://pypi.org/project/epochalyst/)
 
