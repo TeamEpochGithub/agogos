@@ -14,15 +14,7 @@ copyright = "2024, Jasper van Selm"
 author = "Jasper van Selm"
 
 # Add root path of repository
-sys.path.insert(0, Path("..").resolve().as_posix())
 sys.path.insert(0, Path("../..").resolve().as_posix())
-print(sys.path)
-
-# try:
-#     # import agogos
-
-# except Exception as e:
-#     print("FAUl")
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -40,5 +32,5 @@ source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "sphinxawesome_theme"
 html_static_path = ["_static"]
