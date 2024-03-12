@@ -1,6 +1,6 @@
 # Agogos
 
-![image](.docs/_static/agogos)
+![image](.docs/_static/agogos.png)
 [![PyPI Latest Release](https://img.shields.io/pypi/v/agogos.svg)](https://pypi.org/project/agogos/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/agogos.svg?label=PyPI%20downloads)](https://pypi.org/project/epochalyst/)
 
