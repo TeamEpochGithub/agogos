@@ -8,24 +8,25 @@ from abc import abstractmethod
 class _Base:
     """The _Base class is the base class for all classes in the agogos package.
 
-    ### Methods:
-    ```python
-    @abstractmethod
-    def _set_hash(self, prev_hash: str) -> None: # Set the hash of the block.
-        # Called by the __post_init__ method of the block.
-
-    def get_hash(self) -> str: # Get the hash of the block.
-    ```
-
-    ### Usage:
-    ```python
-    from agogos._core._base import _Base
-
-    class Block(_Base):
-
+    Methods:
+    .. code-block:: python
+        @abstractmethod
         def _set_hash(self, prev_hash: str) -> None:
             # Set the hash of the block.
-            self._hash = hash(prev_hash + str(self))
+            # Called by the __post_init__ method of the block.
+
+        def get_hash(self) -> str:
+            # Get the hash of the block.
+
+    Usage:
+    .. code-block:: python
+        from agogos._core._base import _Base
+
+        class Block(_Base):
+
+            def _set_hash(self, prev_hash: str) -> None:
+                # Set the hash of the block.
+                self._hash = hash(prev_hash + str(self))
     """
 
     def __post_init__(self) -> None:
@@ -54,12 +55,11 @@ class _Base:
 class _Block(_Base):
     """The _Block class is the base class for all blocks.
 
-    ### Methods:
-    ```python
-    def get_hash(self) -> str: # Get the hash of the block.
+    Methods:
+    .. code-block:: python
+        def get_hash(self) -> str: # Get the hash of the block.
 
-    def _set_hash(self, prev_hash: str) -> None: # Set the hash of the block.
-    ```
+        def _set_hash(self, prev_hash: str) -> None: # Set the hash of the block.
     """
 
     def _set_hash(self, prev_hash: str) -> None:
@@ -74,15 +74,14 @@ class _Block(_Base):
 class _System(_Base):
     """The _System class is the base class for all systems.
 
-    ### Parameters:
+    Parameters:
     - steps (list[_Base]): The steps in the system.
 
-    ### Methods:
-    ```python
-    def get_hash(self) -> str: # Get the hash of the system.
+    Methods:
+    .. code-block:: python
+        def get_hash(self) -> str: # Get the hash of the system.
 
-    def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
-    ```
+        def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
     """
 
     steps: list[_Base] = field(default_factory=list)

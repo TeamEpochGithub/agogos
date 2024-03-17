@@ -7,26 +7,25 @@ from agogos._core import _Block, _System
 class Transformer(_Block):
     """The transformer block transforms any data it could be x or y data.
 
-    ### Methods:
-    ```python
-    @abstractmethod
-    def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
+    Methods:
+    .. code-block:: python
+        @abstractmethod
+        def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
 
-    def get_hash(self) -> str: # Get the hash of the block.
+        def get_hash(self) -> str: # Get the hash of the block.
     ```
 
-    ### Usage:
-    ```python
-    from agogos.transformer import Transformer
+    Usage:
+    .. code-block:: python
+        from agogos.transformer import Transformer
 
-    class MyTransformer(Transformer):
-        def transform(self, data: Any, **transform_args: Any) -> Any:
-            # Transform the input data.
-            return data
+        class MyTransformer(Transformer):
+            def transform(self, data: Any, **transform_args: Any) -> Any:
+                # Transform the input data.
+                return data
 
-    my_transformer = MyTransformer()
-    transformed_data = my_transformer.transform(data)
-    ```
+        my_transformer = MyTransformer()
+        transformed_data = my_transformer.transform(data)
     """
 
     @abstractmethod
@@ -44,27 +43,25 @@ class Transformer(_Block):
 class TransformingSystem(_System):
     """A system that transforms the input data.
 
-    ### Parameters:
+    Parameters:
     - steps (list[Transformer | TransformingSystem | ParallelTransformingSystem]): The steps in the system.
 
     Implements the following methods:
-    ```python
-    def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
+    .. code-block:: python
+        def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
 
-    def get_hash(self) -> str: # Get the hash of the system.
-    ```
+        def get_hash(self) -> str: # Get the hash of the system.
 
     Usage:
-    ```python
-    from agogos.transforming_system import TransformingSystem
+    .. code-block:: python
+        from agogos.transforming_system import TransformingSystem
 
-    transformer_1 = CustomTransformer()
-    transformer_2 = CustomTransformer()
+        transformer_1 = CustomTransformer()
+        transformer_2 = CustomTransformer()
 
-    transforming_system = TransformingSystem(steps=[transformer_1, transformer_2])
-    transformed_data = transforming_system.transform(data)
-    predictions = transforming_system.predict(data)
-    ```
+        transforming_system = TransformingSystem(steps=[transformer_1, transformer_2])
+        transformed_data = transforming_system.transform(data)
+        predictions = transforming_system.predict(data)
     """
 
     def __post_init__(self) -> None:
@@ -108,35 +105,33 @@ class TransformingSystem(_System):
 class ParallelTransformingSystem(_System):
     """A system that transforms the input data in parallel.
 
-    ### Parameters:
+    Parameters:
     - steps (list[Transformer | TransformingSystem | ParallelTransformingSystem]): The steps in the system.
 
-    ### Methods:
-    ```python
-    @abstractmethod
-    def concat(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed data.
+    Methods:
+    .. code-block:: python
+        @abstractmethod
+        def concat(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed data.
 
-    def transform(self, data: Any, **transform_args) -> Any: # Transform the input data.
+        def transform(self, data: Any, **transform_args) -> Any: # Transform the input data.
 
-    def get_hash(self) -> str: # Get the hash of the system.
-    ```
+        def get_hash(self) -> str: # Get the hash of the system.
 
-    ### Usage:
-    ```python
-    from agogos.parallel_transforming_system import ParallelTransformingSystem
+    Usage:
+    .. code-block:: python
+        from agogos.parallel_transforming_system import ParallelTransformingSystem
 
-    transformer_1 = CustomTransformer()
-    transformer_2 = CustomTransformer()
+        transformer_1 = CustomTransformer()
+        transformer_2 = CustomTransformer()
 
-    class CustomParallelTransformingSystem(ParallelTransformingSystem):
-        def concat(self, data1: Any, data2: Any) -> Any:
-            # Concatenate the transformed data.
-            return data1 + data2
+        class CustomParallelTransformingSystem(ParallelTransformingSystem):
+            def concat(self, data1: Any, data2: Any) -> Any:
+                # Concatenate the transformed data.
+                return data1 + data2
 
-    transforming_system = CustomParallelTransformingSystem(steps=[transformer_1, transformer_2])
+        transforming_system = CustomParallelTransformingSystem(steps=[transformer_1, transformer_2])
 
-    transformed_data = transforming_system.transform(data)
-    ```
+        transformed_data = transforming_system.transform(data)
     """
 
     def __post_init__(self) -> None:
