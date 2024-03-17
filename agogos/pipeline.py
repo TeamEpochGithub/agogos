@@ -27,7 +27,7 @@ class Pipeline(_Base):
 
         def get_hash(self) -> str: # Get the hash of the pipeline.
 
-    ### Usage:
+    Usage:
     .. code-block:: python
         from agogos.pipeline import Pipeline
 
