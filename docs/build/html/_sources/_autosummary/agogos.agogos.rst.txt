@@ -1,0 +1,32 @@
+agogos.agogos
+=============
+
+.. automodule:: agogos.agogos
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   agogos.agogos.pipeline
+   agogos.agogos.training
+   agogos.agogos.transforming
