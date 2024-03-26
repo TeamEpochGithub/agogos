@@ -2,6 +2,7 @@
 from dataclasses import field, dataclass
 from joblib import hash
 from abc import abstractmethod
+from typing import Any
 
 
 @dataclass
@@ -32,6 +33,8 @@ class _Base:
     def __post_init__(self) -> None:
         """Initialize the block."""
         self._set_hash("")
+        self._set_parent(None)
+        self._set_children([])
 
     @abstractmethod
     def _set_hash(self, prev_hash: str) -> None:
@@ -50,6 +53,33 @@ class _Base:
         :return: The hash of the block.
         """
         return self._hash
+
+    def get_parent(self) -> Any:
+        """Get the parent of the block.
+
+        :return: Parent of the block
+        """
+        return self._parent
+
+    def get_children(self) -> list[Any]:
+        """Get the children of the block.
+
+        :return: Children of the block"""
+        return self._children
+
+    def _set_parent(self, parent: Any) -> None:
+        """Set the parent of the block.
+
+        :param parent: Parent of the block
+        """
+        self._parent = parent
+
+    def _set_children(self, children: list[Any]) -> None:
+        """Set the children of the block.
+
+        :param children: Children of the block
+        """
+        self._children = children
 
 
 class _Block(_Base):
@@ -81,10 +111,24 @@ class _System(_Base):
     .. code-block:: python
         def get_hash(self) -> str: # Get the hash of the system.
 
+        def get_parent(self) -> Any: # Get the parent of the system.
+
+        def get_children(self) -> list[Any]: # Get the children of the system
+
         def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
     """
 
     steps: list[_Base] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        """Post init function of _System class"""
+        super().__post_init__()
+
+        # Set parent and children
+        for step in self.steps:
+            step._set_parent(self)
+
+        self._set_children(self.steps)
 
     def _set_hash(self, prev_hash: str) -> None:
         """Set the hash of the system.
