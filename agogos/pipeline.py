@@ -12,36 +12,34 @@ from agogos._core import _Base
 class Pipeline(_Base):
     """A pipeline of systems that can be trained and predicted.
 
-    ### Parameters:
+    Parameters:
     - x_sys (TransformingSystem | None): The system to transform the input data.
     - y_sys (TransformingSystem | None): The system to transform the labelled data.
     - train_sys (TrainingSystem | None): The system to train the data.
     - pred_sys (TransformingSystem | None): The system to transform the predictions.
     - label_sys (TransformingSystem | None): The system to transform the labels.
 
-    ### Methods:
-    ```python
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the system.
+    Methods:
+    .. code-block:: python
+        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the system.
 
-    def predict(self, x: Any, **pred_args) -> Any: # Predict the output of the system.
+        def predict(self, x: Any, **pred_args) -> Any: # Predict the output of the system.
 
-    def get_hash(self) -> str: # Get the hash of the pipeline.
-    ```
+        def get_hash(self) -> str: # Get the hash of the pipeline.
 
-    ### Usage:
-    ```python
-    from agogos.pipeline import Pipeline
+    Usage:
+    .. code-block:: python
+        from agogos.pipeline import Pipeline
 
-    x_sys = CustomTransformingSystem()
-    y_sys = CustomTransformingSystem()
-    train_sys = CustomTrainingSystem()
-    pred_sys = CustomTransformingSystem()
-    label_sys = CustomTransformingSystem()
+        x_sys = CustomTransformingSystem()
+        y_sys = CustomTransformingSystem()
+        train_sys = CustomTrainingSystem()
+        pred_sys = CustomTransformingSystem()
+        label_sys = CustomTransformingSystem()
 
-    pipeline = Pipeline(x_sys=x_sys, y_sys=y_sys, train_sys=train_sys, pred_sys=pred_sys, label_sys=label_sys)
-    trained_x, trained_y = pipeline.train(x, y)
-    predictions = pipeline.predict(x)
-    ```
+        pipeline = Pipeline(x_sys=x_sys, y_sys=y_sys, train_sys=train_sys, pred_sys=pred_sys, label_sys=label_sys)
+        trained_x, trained_y = pipeline.train(x, y)
+        predictions = pipeline.predict(x)
     """
 
     x_sys: TransformingSystem | None = None

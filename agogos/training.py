@@ -7,35 +7,33 @@ from agogos._core import _Block, _System
 class Trainer(_Block):
     """The trainer block is for blocks that need to train on two inputs and predict on one.
 
-    ### Methods:
-    ```python
-    @abstractmethod
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the block.
+    Methods:
+    .. code-block:: python
+        @abstractmethod
+        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the block.
 
-    @abstractmethod
-    def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the target variable.
+        @abstractmethod
+        def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the target variable.
 
-    def get_hash(self) -> str: # Get the hash of the block.
-    ```
+        def get_hash(self) -> str: # Get the hash of the block.
 
-    ### Usage:
-    ```python
-    from agogos.trainer import Trainer
+    Usage:
+    .. code-block:: python
+        from agogos.trainer import Trainer
 
-    class MyTrainer(Trainer):
+        class MyTrainer(Trainer):
 
-        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
-            # Train the block.
-            return x, y
+            def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+                # Train the block.
+                return x, y
 
-        def predict(self, x: Any, **pred_args: Any) -> Any:
-            # Predict the target variable.
-            return x
+            def predict(self, x: Any, **pred_args: Any) -> Any:
+                # Predict the target variable.
+                return x
 
-    my_trainer = MyTrainer()
-    predictions, labels = my_trainer.train(x, y)
-    predictions = my_trainer.predict(x)
-    ```
+        my_trainer = MyTrainer()
+        predictions, labels = my_trainer.train(x, y)
+        predictions = my_trainer.predict(x)
     """
 
     @abstractmethod
@@ -62,29 +60,27 @@ class Trainer(_Block):
 class TrainingSystem(_System):
     """A system that trains on the input data and labels.
 
-    ### Parameters:
+    Parameters:
     - steps (list[Trainer | TrainingSystem | ParallelTrainingSystem]): The steps in the system.
 
-    ### Methods:
-    ```python
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the system.
+    Methods:
+    .. code-block:: python
+        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the system.
 
-    def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the output of the system.
+        def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the output of the system.
 
-    def get_hash(self) -> str: # Get the hash of the system.
-    ```
+        def get_hash(self) -> str: # Get the hash of the system.
 
-    ### Usage:
-    ```python
-    from agogos.training_system import TrainingSystem
+    Usage:
+    .. code-block:: python
+        from agogos.training_system import TrainingSystem
 
-    trainer_1 = CustomTrainer()
-    trainer_2 = CustomTrainer()
+        trainer_1 = CustomTrainer()
+        trainer_2 = CustomTrainer()
 
-    training_system = TrainingSystem(steps=[trainer_1, trainer_2])
-    trained_x, trained_y = training_system.train(x, y)
-    predictions = training_system.predict(x)
-    ```
+        training_system = TrainingSystem(steps=[trainer_1, trainer_2])
+        trained_x, trained_y = training_system.train(x, y)
+        predictions = training_system.predict(x)
     """
 
     def __post_init__(self) -> None:
@@ -150,39 +146,37 @@ class TrainingSystem(_System):
 class ParallelTrainingSystem(_System):
     """A system that trains the input data in parallel.
 
-    ### Parameters:
+    Parameters:
     - steps (list[Trainer | TrainingSystem | ParallelTrainingSystem]): The steps in the system.
 
-    ### Methods:
-    ```python
-    @abstractmethod
-    def concat(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed data.
+    Methods:
+    .. code-block:: python
+        @abstractmethod
+        def concat(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed data.
 
-    def train(self, x: Any, y: Any) -> tuple[Any, Any]: # Train the system.
+        def train(self, x: Any, y: Any) -> tuple[Any, Any]: # Train the system.
 
-    def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
+        def predict(self, x: Any, pred_args: dict[str, Any] = {}) -> Any: # Predict the output of the system.
 
-    def concat_labels(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed labels.
+        def concat_labels(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed labels.
 
-    def get_hash(self) -> str: # Get the hash of the system.
-    ```
+        def get_hash(self) -> str: # Get the hash of the system.
 
-    ### Usage:
-    ```python
-    from agogos.parallel_training_system import ParallelTrainingSystem
+    Usage:
+    .. code-block:: python
+        from agogos.parallel_training_system import ParallelTrainingSystem
 
-    trainer_1 = CustomTrainer()
-    trainer_2 = CustomTrainer()
+        trainer_1 = CustomTrainer()
+        trainer_2 = CustomTrainer()
 
-    class CustomParallelTrainingSystem(ParallelTrainingSystem):
-        def concat(self, data1: Any, data2: Any) -> Any:
-            # Concatenate the transformed data.
-            return data1 + data2
+        class CustomParallelTrainingSystem(ParallelTrainingSystem):
+            def concat(self, data1: Any, data2: Any) -> Any:
+                # Concatenate the transformed data.
+                return data1 + data2
 
-    training_system = CustomParallelTrainingSystem(steps=[trainer_1, trainer_2])
-    trained_x, trained_y = training_system.train(x, y)
-    predictions = training_system.predict(x)
-    ```
+        training_system = CustomParallelTrainingSystem(steps=[trainer_1, trainer_2])
+        trained_x, trained_y = training_system.train(x, y)
+        predictions = training_system.predict(x)
     """
 
     def __post_init__(self) -> None:

@@ -1,10 +1,10 @@
 .. Agogos documentation master file, created by
-   sphinx-quickstart on Wed Dec 13 14:18:51 2023.
+   sphinx-quickstart on Mon Mar 11 23:48:20 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Agogos
-=======================================
+Welcome to Agogos's documentation!
+==================================
 
 Contents:
 

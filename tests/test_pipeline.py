@@ -61,6 +61,20 @@ class TestPipeline:
         )
         assert pipeline.train([1, 2, 3], [1, 2, 3]) == ([1, 2, 3], [1, 2, 3])
 
+    def test_pipeline_train_no_train_system(self):
+        x_system = TransformingSystem()
+        y_system = TransformingSystem()
+        post_system = TransformingSystem()
+        post_label_system = TransformingSystem()
+        pipeline = Pipeline(
+            x_sys=x_system,
+            y_sys=y_system,
+            train_sys=None,
+            pred_sys=post_system,
+            label_sys=post_label_system,
+        )
+        assert pipeline.train([1, 2], [1, 2]) == ([1, 2], [1, 2])
+
     def test_pipeline_train_no_refining_system(self):
         x_system = TransformingSystem()
         y_system = TransformingSystem()
@@ -111,6 +125,10 @@ class TestPipeline:
             train_sys=training_system,
             pred_sys=prediction_system,
         )
+        assert pipeline.predict([1, 2, 3]) == [1, 2, 3]
+
+    def test_pipeline_predict_no_systems(self):
+        pipeline = Pipeline()
         assert pipeline.predict([1, 2, 3]) == [1, 2, 3]
 
     def test_pipeline_get_hash_no_change(self):
