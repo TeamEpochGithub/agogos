@@ -86,6 +86,8 @@ class TestTrainingSystem:
         block1 = SubTrainer()
         block2 = SubTrainer()
         block3 = TrainingSystem(steps=[block1, block2])
+        assert block2.get_parent() == block3
+        assert block1 in block3.get_children()
         training_system = TrainingSystem(steps=[block1, block2, block3])
         assert training_system.predict([1, 2, 3]) == [1, 2, 3]
 

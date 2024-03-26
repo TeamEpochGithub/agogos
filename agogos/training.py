@@ -319,6 +319,27 @@ class Pipeline(_Base):
     pred_sys: TransformingSystem | None = None
     label_sys: TransformingSystem | None = None
 
+    def __post_init__(self) -> None:
+        """Post initialization function of the Pipeline."""
+        super().__post_init__()
+
+        # Set children and parents
+        children = []
+        systems = [
+            self.x_sys,
+            self.y_sys,
+            self.train_sys,
+            self.pred_sys,
+            self.label_sys,
+        ]
+
+        for sys in systems:
+            if sys is not None:
+                sys._set_parent(self)
+                children.append(sys)
+
+        self._set_children(children)
+
     def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
         """Train the system.
 
