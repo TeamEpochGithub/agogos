@@ -9,6 +9,12 @@
 
 This package contains many modules and classes necessary to construct the ml pipeline for machine learning competitions.
 
+## Description
+
+<p align="center">
+    <img src="./docs/images/Screenshot_2024-03-27-22-01-49_5760x1080.png" width="300">
+</p>
+
 ## Pytest coverage report
 
 To generate pytest coverage report run
