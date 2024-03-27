@@ -18,5 +18,6 @@ agogos.training
    .. autosummary::
 
       ParallelTrainingSystem
+      Pipeline
       Trainer
       TrainingSystem

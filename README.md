@@ -5,9 +5,15 @@
 <h1 align="center">Agogos</h1>
 
 [![PyPI Latest Release](https://img.shields.io/pypi/v/agogos.svg)](https://pypi.org/project/agogos/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/agogos.svg?label=PyPI%20downloads)](https://pypi.org/project/epochalyst/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/agogos.svg?label=PyPI%20downloads)](https://pypi.org/project/agogos/)
 
 This package contains many modules and classes necessary to construct the ml pipeline for machine learning competitions.
+
+## Description
+
+<p align="center">
+    <img src="./docs/images/Screenshot_2024-03-27-22-01-49_5760x1080.png" width="300">
+</p>
 
 ## Pytest coverage report
 

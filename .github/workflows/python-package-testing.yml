@@ -49,4 +49,4 @@ jobs:
 
     - name: Test with pytest and check coverage
       run: |
-        venv/bin/python -m pytest --cov=agogos --cov-fail-under=95 tests
+        venv/bin/python -m pytest --cov=agogos --cov-branch --cov-fail-under=95 tests

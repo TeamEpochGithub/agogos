@@ -37,6 +37,13 @@ class TestBlock:
         hash1 = block.get_hash()
         assert hash1 == "04714d9ee40c9baff8c528ed982a103c"
 
+    def test__repr_html_(self):
+        block_instance = _Block()
+
+        html_representation = block_instance._repr_html_()
+
+        assert html_representation is not None
+
 
 class TestSystem:
     def test_system_init(self):
@@ -52,3 +59,10 @@ class TestSystem:
 
         system = _System([block1])
         assert system.get_hash() == "3de71998c76824d4e9c46e6894f82460"
+
+    def test__repr_html_(self):
+        block_instance = _Block()
+        system_instance = _System([block_instance, block_instance])
+        html_representation = system_instance._repr_html_()
+
+        assert html_representation is not None

@@ -27,6 +27,5 @@
    :toctree:
    :recursive:
 
-   agogos.pipeline
    agogos.training
    agogos.transforming
