@@ -1,4 +1,5 @@
 """This module contains the core classes for all classes in the agogos package."""
+from pathlib import Path
 from dataclasses import field, dataclass
 from joblib import hash
 from abc import abstractmethod
@@ -67,6 +68,14 @@ class _Base:
         :return: Children of the block"""
         return self._children
 
+    def save_to_html(self, file_path: Path) -> None:
+        """Write html representation of class to file
+
+        :param file_path: File path to write to"""
+        html = self._repr_html_()
+        with open(file_path, "w") as file:
+            file.write(html)
+
     def _set_parent(self, parent: Any) -> None:
         """Set the parent of the block.
 
@@ -80,6 +89,29 @@ class _Base:
         :param children: Children of the block
         """
         self._children = children
+
+    def _repr_html_(self) -> str:
+        """Return representation of class in html format
+
+        :return: String representation of html
+        """
+        html = "<div style='border: 1px solid black; padding: 10px;'>"
+        html += f"<p><strong>Class:</strong> {self.__class__.__name__}</p>"
+        html += "<ul>"
+        html += f"<li><strong>Hash:</strong> {self.get_hash()}</li>"
+        html += f"<li><strong>Parent:</strong> {self.get_parent()}</li>"
+        html += "<li><strong>Children:</strong> "
+        if self.get_children():
+            html += "<ul>"
+            for child in self.get_children():
+                html += f"<li>{child._repr_html_()}</li>"
+            html += "</ul>"
+        else:
+            html += "None"
+        html += "</li>"
+        html += "</ul>"
+        html += "</div>"
+        return html
 
 
 class _Block(_Base):
