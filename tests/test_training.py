@@ -147,10 +147,10 @@ class TestParallelTrainingSystem:
                 return x, y
 
         class pts(ParallelTrainingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
                 return data1 + data2
 
-            def concat_labels(self, data1, data2):
+            def concat_labels(self, data1, data2, weight):
                 return data1 + data2
 
         t1 = trainer()
@@ -166,10 +166,10 @@ class TestParallelTrainingSystem:
                 return x, y
 
         class pts(ParallelTrainingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
                 return data1 + data2
 
-            def concat_labels(self, data1, data2):
+            def concat_labels(self, data1, data2, weight):
                 return data1 + data2
 
         t1 = trainer()
@@ -189,7 +189,7 @@ class TestParallelTrainingSystem:
                 return x
 
         class pts(ParallelTrainingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
                 return data1 + data2
 
         t1 = trainer()
@@ -205,7 +205,7 @@ class TestParallelTrainingSystem:
                 return x
 
         class pts(ParallelTrainingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
                 return data1 + data2
 
         t1 = trainer()
@@ -222,7 +222,7 @@ class TestParallelTrainingSystem:
                 return x
 
         class pts(ParallelTrainingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
                 return data1 + data2
 
         t1 = trainer()
@@ -240,7 +240,7 @@ class TestParallelTrainingSystem:
                 return x
 
         class pts(ParallelTrainingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
                 return data1 + data2
 
         t1 = trainer()
