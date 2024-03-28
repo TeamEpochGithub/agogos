@@ -193,7 +193,7 @@ class ParallelTrainingSystem(_System):
             assert (
                 issubclass(step.__class__, Trainer)
                 or issubclass(step.__class__, TrainingSystem)
-                or issubclass(step.__class, Pipeline)
+                or issubclass(step.__class__, Pipeline)
             ), f"{step} is not a subclass of Trainer or TrainingSystem"
 
         super().__post_init__()
@@ -207,6 +207,7 @@ class ParallelTrainingSystem(_System):
         """
 
         # Loop through each step and call the train method
+        num_steps = len(self.steps)
         for i, step in enumerate(self.steps):
             step_name = step.__class__.__name__
 
@@ -222,7 +223,10 @@ class ParallelTrainingSystem(_System):
                     x, y = step.train(x, y, **step_args)
                 else:
                     new_x, new_y = step.train(x, y, **step_args)
-                    x, y = self.concat(x, new_x), self.concat_labels(y, new_y)
+                    x, y = (
+                        self.concat(x, new_x, 1 / num_steps),
+                        self.concat_labels(y, new_y, 1 / num_steps),
+                    )
             else:
                 raise TypeError(
                     f"{step} is not a subclass of Trainer, TrainingSystem or ParallelTrainingSystem"
@@ -238,6 +242,7 @@ class ParallelTrainingSystem(_System):
         """
 
         # Loop through each trainer and call the predict method
+        num_steps = len(self.steps)
         for i, step in enumerate(self.steps):
             step_name = step.__class__.__name__
 
@@ -253,7 +258,7 @@ class ParallelTrainingSystem(_System):
                     x = step.predict(x, **step_args)
                 else:
                     x_new = step.predict(x, **step_args)
-                    x = self.concat(x, x_new)
+                    x = self.concat(x, x_new, 1 / num_steps)
             else:
                 raise TypeError(
                     f"{step} is not a subclass of Trainer or TrainingSystem"
@@ -261,21 +266,27 @@ class ParallelTrainingSystem(_System):
 
         return x
 
-    def concat_labels(self, data1: Any, data2: Any) -> Any:
+    def concat_labels(
+        self, original_data: Any, data_to_concat: Any, weight: float = 1.0
+    ) -> Any:
         """Concatenate the transformed labels. Will use concat method if not overridden.
 
-        :param data1: The first input data.
-        :param data2: The second input data.
+        :param original_data: The first input data.
+        :param data_to_concat: The second input data.
+        :param weight: Weight of data to concat
         :return: The concatenated data.
         """
-        return self.concat(data1, data2)
+        return self.concat(original_data, data_to_concat, weight)
 
     @abstractmethod
-    def concat(self, data1: Any, data2: Any) -> Any:
+    def concat(
+        self, original_data: Any, data_to_concat: Any, weight: float = 1.0
+    ) -> Any:
         """Concatenate the transformed data.
 
-        :param data1: The first input data.
-        :param data2: The second input data.
+        :param original_data: The first input data.
+        :param data_to_concat: The second input data.
+        :param weight: Weight of data to concat
         :return: The concatenated data.
         """
         raise NotImplementedError(
