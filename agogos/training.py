@@ -221,6 +221,8 @@ class ParallelTrainingSystem(_System):
             ):
                 if i == 0:
                     x, y = step.train(x, y, **step_args)
+                    x = x / num_steps
+                    y = y / num_steps
                 else:
                     new_x, new_y = step.train(x, y, **step_args)
                     x, y = (
