@@ -90,8 +90,10 @@ class TrainingSystem(_System):
 
         # Assert all steps are a subclass of Trainer
         for step in self.steps:
-            assert issubclass(step.__class__, Trainer) or issubclass(
-                step.__class__, TrainingSystem
+            assert (
+                issubclass(step.__class__, Trainer)
+                or issubclass(step.__class__, TrainingSystem)
+                or issubclass(step.__class__, Pipeline)
             ), f"{step} is not a subclass of Trainer"
 
         super().__post_init__()
@@ -188,8 +190,10 @@ class ParallelTrainingSystem(_System):
 
         # Assert all steps are a subclass of Trainer or TrainingSystem
         for step in self.steps:
-            assert issubclass(step.__class__, Trainer) or issubclass(
-                step.__class__, TrainingSystem
+            assert (
+                issubclass(step.__class__, Trainer)
+                or issubclass(step.__class__, TrainingSystem)
+                or issubclass(step.__class, Pipeline)
             ), f"{step} is not a subclass of Trainer or TrainingSystem"
 
         super().__post_init__()
