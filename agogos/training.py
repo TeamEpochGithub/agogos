@@ -208,6 +208,7 @@ class ParallelTrainingSystem(_System):
 
         # Loop through each step and call the train method
         num_steps = len(self.steps)
+        out_x, out_y = None, None
         for i, step in enumerate(self.steps):
             step_name = step.__class__.__name__
 
@@ -219,22 +220,17 @@ class ParallelTrainingSystem(_System):
                 or isinstance(step, ParallelTrainingSystem)
                 or isinstance(step, Pipeline)
             ):
-                if i == 0:
-                    x, y = step.train(x, y, **step_args)
-                    x = x / num_steps
-                    y = y / num_steps
-                else:
-                    new_x, new_y = step.train(x, y, **step_args)
-                    x, y = (
-                        self.concat(x, new_x, 1 / num_steps),
-                        self.concat_labels(y, new_y, 1 / num_steps),
-                    )
+                step_x, step_y = step.train(x, y, **step_args)
+                out_x, out_y = (
+                    self.concat(out_x, step_x, 1 / num_steps),
+                    self.concat_labels(out_y, step_y, 1 / num_steps),
+                )
             else:
                 raise TypeError(
-                    f"{step} is not a subclass of Trainer, TrainingSystem or ParallelTrainingSystem"
+                    f"{step} is not a subclass of Trainer, TrainingSystem, ParallelTrainingSystem or Pipeline"
                 )
 
-        return x, y
+        return out_x, out_y
 
     def predict(self, x: Any, **pred_args: Any) -> Any:
         """Predict the output of the system.
@@ -245,6 +241,7 @@ class ParallelTrainingSystem(_System):
 
         # Loop through each trainer and call the predict method
         num_steps = len(self.steps)
+        out_x = None
         for i, step in enumerate(self.steps):
             step_name = step.__class__.__name__
 
@@ -256,17 +253,14 @@ class ParallelTrainingSystem(_System):
                 or isinstance(step, ParallelTrainingSystem)
                 or isinstance(step, Pipeline)
             ):
-                if i == 0:
-                    x = step.predict(x, **step_args)
-                else:
-                    x_new = step.predict(x, **step_args)
-                    x = self.concat(x, x_new, 1 / num_steps)
+                step_x = step.predict(x, **step_args)
+                out_x = self.concat(out_x, step_x, 1 / num_steps)
             else:
                 raise TypeError(
                     f"{step} is not a subclass of Trainer or TrainingSystem"
                 )
 
-        return x
+        return out_x
 
     def concat_labels(
         self, original_data: Any, data_to_concat: Any, weight: float = 1.0

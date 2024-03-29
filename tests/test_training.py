@@ -148,9 +148,9 @@ class TestParallelTrainingSystem:
 
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2, weight):
-                return data1 + data2
+                if data1 is None:
+                    return data2
 
-            def concat_labels(self, data1, data2, weight):
                 return data1 + data2
 
         t1 = trainer()
@@ -167,9 +167,8 @@ class TestParallelTrainingSystem:
 
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2, weight):
-                return data1 + data2
-
-            def concat_labels(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
                 return data1 + data2
 
         t1 = trainer()
@@ -183,6 +182,32 @@ class TestParallelTrainingSystem:
             [1, 2, 3, 1, 2, 3],
         )
 
+    def test_PTrainSys_trainers_with_weights(self):
+        class trainer(Trainer):
+            def train(self, x, y):
+                return x, y
+
+        class trainer2(Trainer):
+            def train(self, x, y):
+                return x * 3, y
+
+        class pts(ParallelTrainingSystem):
+            def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2 * weight
+                return data1 + data2 * weight
+
+        t1 = trainer()
+        t2 = trainer2()
+
+        system = pts(steps=[t1, t2])
+
+        assert system is not None
+        test = np.array([1, 2, 3])
+        preds, labels = system.train(test, test)
+        assert np.array_equal(preds, test * 2)
+        assert np.array_equal(labels, test)
+
     def test_PTrainSys_predict(self):
         class trainer(Trainer):
             def predict(self, x):
@@ -190,6 +215,8 @@ class TestParallelTrainingSystem:
 
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
                 return data1 + data2
 
         t1 = trainer()
@@ -206,6 +233,8 @@ class TestParallelTrainingSystem:
 
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
                 return data1 + data2
 
         t1 = trainer()
@@ -223,6 +252,8 @@ class TestParallelTrainingSystem:
 
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
                 return data1 + data2
 
         t1 = trainer()
@@ -232,7 +263,8 @@ class TestParallelTrainingSystem:
         system = pts(steps=[t1, t2, t3])
 
         assert system is not None
-        assert system.predict([1, 2, 3]) == [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]
+        assert t3.predict([1, 2, 3]) == [1, 2, 3]
+        assert system.predict([1, 2, 3]) == [1, 2, 3, 1, 2, 3, 1, 2, 3]
 
     def test_PTrainSys_predictors(self):
         class trainer(Trainer):
@@ -241,6 +273,8 @@ class TestParallelTrainingSystem:
 
         class pts(ParallelTrainingSystem):
             def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
                 return data1 + data2
 
         t1 = trainer()
@@ -270,7 +304,14 @@ class TestParallelTrainingSystem:
             system.predict([1, 2, 3])
 
     def test_PTrainSys_step_2_changed(self):
-        system = ParallelTrainingSystem()
+        class pts(ParallelTrainingSystem):
+            def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
+
+                return data1 + data2
+
+        system = pts()
 
         class trainer(Trainer):
             def train(self, x, y):
