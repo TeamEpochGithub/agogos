@@ -55,7 +55,7 @@ class TestTrainingSystem:
             def predict(self, x):
                 return x
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TypeError):
             TrainingSystem(steps=[SubTrainer()])
 
     def test_training_system_steps_changed_predict(self):
@@ -140,6 +140,15 @@ class TestParallelTrainingSystem:
         system = ParallelTrainingSystem(steps=[t1, t2])
 
         assert system is not None
+
+    def test_PTrainSys_init_wrong_trainers(self):
+        class WrongTrainer:
+            """Wrong trainer"""
+
+        t1 = WrongTrainer()
+
+        with pytest.raises(TypeError):
+            ParallelTrainingSystem(steps=[t1])
 
     def test_PTrainSys_train(self):
         class trainer(Trainer):
@@ -487,7 +496,8 @@ class TestPipeline:
             train_sys=training_system,
             pred_sys=prediction_system,
         )
-        assert pipeline.get_hash() == "aa7c4cff990dc48c4e3456deed913e16"
+        assert x_system.get_hash() != y_system.get_hash()
+        assert pipeline.get_hash() == "787438b6940d465d122113444249eaa4"
 
     def test_pipeline_predict_system_hash(self):
         class TransformingBlock(Transformer):
@@ -505,6 +515,7 @@ class TestPipeline:
             train_sys=training_system,
             pred_sys=prediction_system,
         )
+        assert prediction_system.get_hash() != x_system.get_hash()
         assert pipeline.get_hash() == "842e1162d744e7ab09c941300a43c218"
 
     def test_pipeline_pre_post_hash(self):
@@ -523,4 +534,5 @@ class TestPipeline:
             train_sys=training_system,
             pred_sys=prediction_system,
         )
-        assert pipeline.get_hash() == "3dda824076fddafd028812e7891fbd8b"
+        assert x_system.get_hash() != prediction_system.get_hash()
+        assert pipeline.get_hash() == "8a0be6742040f6a05d805ac79b486f6c"
