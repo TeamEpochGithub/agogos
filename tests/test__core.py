@@ -44,6 +44,7 @@ class Test_Base:
 
     def test_save_to_html(self):
         html_path = Path("./tests/cache/test_html.html")
+        Path("./tests/cache/").mkdir(parents=True, exist_ok=True)
         base = _Base()
         base.save_to_html(html_path)
         assert Path.exists(html_path)
