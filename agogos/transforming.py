@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Any
 
-from agogos._core import _Block, _System
+from agogos._core import _Block, _SequentialSystem, _ParallelSystem
 
 
 class Transformer(_Block):
@@ -10,10 +10,20 @@ class Transformer(_Block):
     Methods:
     .. code-block:: python
         @abstractmethod
-        def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
+        def transform(self, data: Any, **transform_args: Any) -> Any:
+            # Transform the input data.
 
-        def get_hash(self) -> str: # Get the hash of the block.
-    ```
+        def get_hash(self) -> str:
+            # Get the hash of the Transformer
+
+        def get_parent(self) -> Any:
+            # Get the parent of the Transformer
+
+        def get_children(self) -> list[Any]:
+            # Get the children of the Transformer
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
 
     Usage:
     .. code-block:: python
@@ -40,7 +50,7 @@ class Transformer(_Block):
         )
 
 
-class TransformingSystem(_System):
+class TransformingSystem(_SequentialSystem):
     """A system that transforms the input data.
 
     Parameters:
@@ -48,9 +58,21 @@ class TransformingSystem(_System):
 
     Implements the following methods:
     .. code-block:: python
-        def transform(self, data: Any, **transform_args: Any) -> Any: # Transform the input data.
+        def transform(self, data: Any, **transform_args: Any) -> Any:
+            # Transform the input data.
 
-        def get_hash(self) -> str: # Get the hash of the system.
+        def get_hash(self) -> str:
+            # Get the hash of the TransformingSystem
+
+        def get_parent(self) -> Any:
+            # Get the parent of the TransformingSystem
+
+        def get_children(self) -> list[Any]:
+            # Get the children of the TransformingSystem
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
+
 
     Usage:
     .. code-block:: python
@@ -69,11 +91,10 @@ class TransformingSystem(_System):
 
         # Assert all steps are a subclass of Transformer
         for step in self.steps:
-            assert (
-                issubclass(step.__class__, Transformer)
-                or issubclass(step.__class__, TransformingSystem)
-                or issubclass(step.__class__, ParallelTransformingSystem)
-            ), f"{step} is not a subclass of Transformer"
+            if not isinstance(
+                step, (Transformer, TransformingSystem, ParallelTransformingSystem)
+            ):
+                raise TypeError(f"{step} is not an instance of a transformer")
 
         super().__post_init__()
 
@@ -89,20 +110,17 @@ class TransformingSystem(_System):
             step_name = step.__class__.__name__
 
             step_args = transform_args.get(step_name, {})
-
-            if (
-                isinstance(step, Transformer)
-                or isinstance(step, TransformingSystem)
-                or isinstance(step, ParallelTransformingSystem)
+            if isinstance(
+                step, (Transformer, TransformingSystem, ParallelTransformingSystem)
             ):
                 data = step.transform(data, **step_args)
             else:
-                raise TypeError(f"{step} is not a subclass of Transformer")
+                raise TypeError(f"{step} is not an instance of a transformer")
 
         return data
 
 
-class ParallelTransformingSystem(_System):
+class ParallelTransformingSystem(_ParallelSystem):
     """A system that transforms the input data in parallel.
 
     Parameters:
@@ -111,11 +129,20 @@ class ParallelTransformingSystem(_System):
     Methods:
     .. code-block:: python
         @abstractmethod
-        def concat(self, data1: Any, data2: Any) -> Any: # Concatenate the transformed data.
+        def concat(self, original_data: Any), data_to_concat: Any, weight: float = 1.0) -> Any:
+            # Specifies how to concat data after parallel computations
 
-        def transform(self, data: Any, **transform_args) -> Any: # Transform the input data.
+        def get_hash(self) -> str:
+            # Get the hash of the ParallelTransformingSystem.
 
-        def get_hash(self) -> str: # Get the hash of the system.
+        def get_parent(self) -> Any:
+            # Get the parent of the ParallelTransformingSystem.
+
+        def get_children(self) -> list[Any]:
+            # Get the children of the ParallelTransformingSystem
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
 
     Usage:
     .. code-block:: python
@@ -156,11 +183,8 @@ class ParallelTransformingSystem(_System):
             step_name = step.__class__.__name__
 
             step_args = transform_args.get(step_name, {})
-
-            if (
-                isinstance(step, Transformer)
-                or isinstance(step, TransformingSystem)
-                or isinstance(step, ParallelTransformingSystem)
+            if isinstance(
+                step, (Transformer, TransformingSystem, ParallelTransformingSystem)
             ):
                 if i == 0:
                     data = step.transform(data, **step_args)
@@ -170,15 +194,3 @@ class ParallelTransformingSystem(_System):
                 raise TypeError(f"{step} is not a subclass of Transformer")
 
         return data
-
-    @abstractmethod
-    def concat(self, data1: Any, data2: Any) -> Any:
-        """Concatenate the transformed data.
-
-        :param data1: The first input data.
-        :param data2: The second input data.
-        :return: The concatenated data.
-        """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement concat method."
-        )
