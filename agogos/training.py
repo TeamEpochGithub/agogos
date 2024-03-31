@@ -12,12 +12,24 @@ class Trainer(_Block):
     Methods:
     .. code-block:: python
         @abstractmethod
-        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the block.
+        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+            # Train the block.
 
         @abstractmethod
-        def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the target variable.
+        def predict(self, x: Any, **pred_args: Any) -> Any:
+            # Predict the target variable.
 
-        def get_hash(self) -> str: # Get the hash of the block.
+        def get_hash(self) -> str:
+            # Get the hash of the block.
+
+        def get_parent(self) -> Any:
+            # Get the parent of the block.
+
+        def get_children(self) -> list[Any]:
+            # Get the children of the block
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
 
     Usage:
     .. code-block:: python
@@ -71,7 +83,17 @@ class TrainingSystem(_SequentialSystem):
 
         def predict(self, x: Any, **pred_args: Any) -> Any: # Predict the output of the system.
 
-        def get_hash(self) -> str: # Get the hash of the system.
+        def get_hash(self) -> str:
+            # Get the hash of the block.
+
+        def get_parent(self) -> Any:
+            # Get the parent of the block.
+
+        def get_children(self) -> list[Any]:
+            # Get the children of the block
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
 
     Usage:
     .. code-block:: python
@@ -90,11 +112,11 @@ class TrainingSystem(_SequentialSystem):
 
         # Assert all steps are a subclass of Trainer
         for step in self.steps:
-            assert (
-                issubclass(step.__class__, Trainer)
-                or issubclass(step.__class__, TrainingSystem)
-                or issubclass(step.__class__, Pipeline)
-            ), f"{step} is not a subclass of Trainer"
+            if not isinstance(
+                step,
+                (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline),
+            ):
+                raise TypeError(f"step: {step} is not an instance of a trainer")
 
         super().__post_init__()
 
@@ -110,12 +132,8 @@ class TrainingSystem(_SequentialSystem):
             step_name = step.__class__.__name__
 
             step_args = train_args.get(step_name, {})
-
-            if (
-                isinstance(step, Trainer)
-                or isinstance(step, TrainingSystem)
-                or isinstance(step, ParallelTrainingSystem)
-                or isinstance(step, Pipeline)
+            if isinstance(
+                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
             ):
                 x, y = step.train(x, y, **step_args)
             else:
@@ -136,11 +154,8 @@ class TrainingSystem(_SequentialSystem):
 
             step_args = pred_args.get(step_name, {})
 
-            if (
-                isinstance(step, Trainer)
-                or isinstance(step, TrainingSystem)
-                or isinstance(step, ParallelTrainingSystem)
-                or isinstance(step, Pipeline)
+            if isinstance(
+                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
             ):
                 x = step.predict(x, **step_args)
             else:
@@ -188,13 +203,12 @@ class ParallelTrainingSystem(_ParallelSystem):
     def __post_init__(self) -> None:
         """Post init method for the ParallelTrainingSystem class."""
 
-        # Assert all steps are a subclass of Trainer or TrainingSystem
+        # Assert all steps correct instances
         for step in self.steps:
-            assert (
-                issubclass(step.__class__, Trainer)
-                or issubclass(step.__class__, TrainingSystem)
-                or issubclass(step.__class__, Pipeline)
-            ), f"{step} is not a subclass of Trainer or TrainingSystem"
+            if not isinstance(
+                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
+            ):
+                raise TypeError(f"{step} is not an instance of a trainer")
 
         super().__post_init__()
 
@@ -214,11 +228,8 @@ class ParallelTrainingSystem(_ParallelSystem):
 
             step_args = train_args.get(step_name, {})
 
-            if (
-                isinstance(step, Trainer)
-                or isinstance(step, TrainingSystem)
-                or isinstance(step, ParallelTrainingSystem)
-                or isinstance(step, Pipeline)
+            if isinstance(
+                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
             ):
                 step_x, step_y = step.train(x, y, **step_args)
                 out_x, out_y = (
@@ -247,18 +258,13 @@ class ParallelTrainingSystem(_ParallelSystem):
 
             step_args = pred_args.get(step_name, {})
 
-            if (
-                isinstance(step, Trainer)
-                or isinstance(step, TrainingSystem)
-                or isinstance(step, ParallelTrainingSystem)
-                or isinstance(step, Pipeline)
+            if isinstance(
+                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
             ):
                 step_x = step.predict(x, **step_args)
                 out_x = self.concat(out_x, step_x, 1 / num_steps)
             else:
-                raise TypeError(
-                    f"{step} is not a subclass of Trainer or TrainingSystem"
-                )
+                raise TypeError(f"{step} is not an instance of a trainer")
 
         return out_x
 
@@ -288,11 +294,23 @@ class Pipeline(_Base):
 
     Methods:
     .. code-block:: python
-        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]: # Train the system.
+        def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+            # Train the system.
 
-        def predict(self, x: Any, **pred_args) -> Any: # Predict the output of the system.
+        def predict(self, x: Any, **pred_args) -> Any:
+            # Predict the output of the system.
 
-        def get_hash(self) -> str: # Get the hash of the pipeline.
+        def get_hash(self) -> str:
+            # Get the hash of the pipeline
+
+        def get_parent(self) -> Any:
+            # Get the parent of the pipeline
+
+        def get_children(self) -> list[Any]:
+            # Get the children of the pipeline
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
 
     Usage:
     .. code-block:: python
@@ -311,7 +329,7 @@ class Pipeline(_Base):
 
     x_sys: TransformingSystem | None = None
     y_sys: TransformingSystem | None = None
-    train_sys: TrainingSystem | None = None
+    train_sys: Trainer | TrainingSystem | ParallelTrainingSystem | None = None
     pred_sys: TransformingSystem | None = None
     label_sys: TransformingSystem | None = None
 
@@ -382,27 +400,30 @@ class Pipeline(_Base):
 
         xy_hash = ""
         if self.x_sys is not None:
+            self.x_sys._set_hash(self.get_hash())
             xy_hash += self.x_sys.get_hash()
         if self.y_sys is not None:
-            xy_hash += self.y_sys.get_hash()
+            self.y_sys._set_hash(self.get_hash())
+            xy_hash += self.y_sys.get_hash()[
+                ::-1
+            ]  # Reversed for edge case where you have two pipelines with the same system but one in x the other in y
 
         if xy_hash != "":
-            self._hash = hash(self._hash + xy_hash)
+            self._hash = hash(xy_hash)
 
         if self.train_sys is not None:
-            self.train_sys._set_hash(self._hash)
+            self.train_sys._set_hash(self.get_hash())
             training_hash = self.train_sys.get_hash()
             if training_hash != "":
                 self._hash = hash(self._hash + training_hash)
 
         predlabel_hash = ""
         if self.pred_sys is not None:
+            self.pred_sys._set_hash(self.get_hash())
             predlabel_hash += self.pred_sys.get_hash()
         if self.label_sys is not None:
+            self.label_sys._set_hash(self.get_hash())
             predlabel_hash += self.label_sys.get_hash()
 
         if predlabel_hash != "":
-            if self._hash == "":
-                self._hash = predlabel_hash
-            else:
-                self._hash = hash(self._hash + predlabel_hash)
+            self._hash = hash(predlabel_hash)
