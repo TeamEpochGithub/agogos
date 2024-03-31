@@ -12,23 +12,17 @@ class _Base:
 
     Methods:
     .. code-block:: python
-        @abstractmethod
-        def _set_hash(self, prev_hash: str) -> None:
-            # Set the hash of the block.
-            # Called by the __post_init__ method of the block.
-
         def get_hash(self) -> str:
-            # Get the hash of the block.
+            # Get the hash of base
 
-    Usage:
-    .. code-block:: python
-        from agogos._core._base import _Base
+        def get_parent(self) -> Any:
+            # Get the parent of base.
 
-        class Block(_Base):
+        def get_children(self) -> list[Any]:
+            # Get the children of base
 
-            def _set_hash(self, prev_hash: str) -> None:
-                # Set the hash of the block.
-                self._hash = hash(prev_hash + str(self))
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
     """
 
     def __post_init__(self) -> None:
@@ -37,16 +31,12 @@ class _Base:
         self._set_parent(None)
         self._set_children([])
 
-    @abstractmethod
     def _set_hash(self, prev_hash: str) -> None:
         """Set the hash of the block.
 
         :param prev_hash: The hash of the previous block.
         """
         self._hash = hash(prev_hash + str(self))
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement _set_hash method."
-        )
 
     def get_hash(self) -> str:
         """Get the hash of the block.
@@ -119,17 +109,18 @@ class _Block(_Base):
 
     Methods:
     .. code-block:: python
-        def get_hash(self) -> str: # Get the hash of the block.
+        def get_hash(self) -> str:
+            # Get the hash of the block.
 
-        def _set_hash(self, prev_hash: str) -> None: # Set the hash of the block.
+        def get_parent(self) -> Any:
+            # Get the parent of the block.
+
+        def get_children(self) -> list[Any]:
+            # Get the children of the block
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
     """
-
-    def _set_hash(self, prev_hash: str) -> None:
-        """Set the hash of the block.
-
-        :param prev_hash: The hash of the previous block.
-        """
-        self._hash = hash(prev_hash + str(self))
 
 
 @dataclass
@@ -141,13 +132,21 @@ class _ParallelSystem(_Base):
 
     Methods:
     .. code-block:: python
-        def get_hash(self) -> str: # Get the hash of the system.
+        @abstractmethod
+        def concat(self, original_data: Any), data_to_concat: Any, weight: float = 1.0) -> Any:
+            # Specifies how to concat data after parallel computations
 
-        def get_parent(self) -> Any: # Get the parent of the system.
+        def get_hash(self) -> str:
+            # Get the hash of the block.
 
-        def get_children(self) -> list[Any]: # Get the children of the system
+        def get_parent(self) -> Any:
+            # Get the parent of the block.
 
-        def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
+        def get_children(self) -> list[Any]:
+            # Get the children of the block
+
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
     """
 
     steps: list[_Base] = field(default_factory=list)
@@ -169,15 +168,24 @@ class _ParallelSystem(_Base):
         """
         self._hash = prev_hash
 
+        # System has no steps and as such hash should not be affected
+        if len(self.steps) == 0:
+            return
+
+        # System is one step and should act as such
         if len(self.steps) == 1:
             step = self.steps[0]
             step._set_hash(prev_hash)
             self._hash = step.get_hash()
             return
 
+        # System has at least two steps so hash should become a combination
+        total = self.get_hash()
         for step in self.steps:
             step._set_hash(prev_hash)
-            self._hash = hash(self.get_hash() + step.get_hash())
+            total = total + step.get_hash()
+
+        self._hash = hash(total)
 
     @abstractmethod
     def concat(
@@ -204,13 +212,17 @@ class _SequentialSystem(_Base):
 
     Methods:
     .. code-block:: python
-        def get_hash(self) -> str: # Get the hash of the system.
+        def get_hash(self) -> str:
+            # Get the hash of the block.
 
-        def get_parent(self) -> Any: # Get the parent of the system.
+        def get_parent(self) -> Any:
+            # Get the parent of the block.
 
-        def get_children(self) -> list[Any]: # Get the children of the system
+        def get_children(self) -> list[Any]:
+            # Get the children of the block
 
-        def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
+        def save_to_html(self, file_path: Path) -> None:
+            # Save html format to file_path
     """
 
     steps: list[_Base] = field(default_factory=list)
@@ -232,6 +244,7 @@ class _SequentialSystem(_Base):
         """
         self._hash = prev_hash
 
+        # Set hash of each step using previous hash and then update hash with last step
         for step in self.steps:
             step._set_hash(self.get_hash())
             self._hash = step.get_hash()
