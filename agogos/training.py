@@ -2,7 +2,7 @@ from abc import abstractmethod
 from joblib import hash
 from typing import Any
 from dataclasses import dataclass
-from agogos._core import _Block, _System, _Base
+from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 from agogos.transforming import TransformingSystem
 
 
@@ -59,7 +59,7 @@ class Trainer(_Block):
         )
 
 
-class TrainingSystem(_System):
+class TrainingSystem(_SequentialSystem):
     """A system that trains on the input data and labels.
 
     Parameters:
@@ -149,7 +149,7 @@ class TrainingSystem(_System):
         return x
 
 
-class ParallelTrainingSystem(_System):
+class ParallelTrainingSystem(_ParallelSystem):
     """A system that trains the input data in parallel.
 
     Parameters:
@@ -273,21 +273,6 @@ class ParallelTrainingSystem(_System):
         :return: The concatenated data.
         """
         return self.concat(original_data, data_to_concat, weight)
-
-    @abstractmethod
-    def concat(
-        self, original_data: Any, data_to_concat: Any, weight: float = 1.0
-    ) -> Any:
-        """Concatenate the transformed data.
-
-        :param original_data: The first input data.
-        :param data_to_concat: The second input data.
-        :param weight: Weight of data to concat
-        :return: The concatenated data.
-        """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement concat method."
-        )
 
 
 @dataclass

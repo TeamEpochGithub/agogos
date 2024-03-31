@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Any
 
-from agogos._core import _Block, _System
+from agogos._core import _Block, _SequentialSystem, _ParallelSystem
 
 
 class Transformer(_Block):
@@ -40,7 +40,7 @@ class Transformer(_Block):
         )
 
 
-class TransformingSystem(_System):
+class TransformingSystem(_SequentialSystem):
     """A system that transforms the input data.
 
     Parameters:
@@ -102,7 +102,7 @@ class TransformingSystem(_System):
         return data
 
 
-class ParallelTransformingSystem(_System):
+class ParallelTransformingSystem(_ParallelSystem):
     """A system that transforms the input data in parallel.
 
     Parameters:
@@ -170,15 +170,3 @@ class ParallelTransformingSystem(_System):
                 raise TypeError(f"{step} is not a subclass of Transformer")
 
         return data
-
-    @abstractmethod
-    def concat(self, data1: Any, data2: Any) -> Any:
-        """Concatenate the transformed data.
-
-        :param data1: The first input data.
-        :param data2: The second input data.
-        :return: The concatenated data.
-        """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement concat method."
-        )

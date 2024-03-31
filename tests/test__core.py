@@ -1,4 +1,4 @@
-from agogos._core import _Block, _Base, _System
+from agogos._core import _Block, _Base, _SequentialSystem, _ParallelSystem
 import pytest
 
 
@@ -45,24 +45,90 @@ class TestBlock:
         assert html_representation is not None
 
 
-class TestSystem:
+class TestSequentialSystem:
     def test_system_init(self):
-        system = _System()
+        system = _SequentialSystem()
         assert system is not None
 
     def test_system_hash_no_steps(self):
-        system = _System()
+        system = _SequentialSystem()
         assert system.get_hash() == ""
 
-    def test_system_hash_with_steps(self):
+    def test_system_hash_with_1_step(self):
         block1 = _Block()
 
-        system = _System([block1])
-        assert system.get_hash() == "3de71998c76824d4e9c46e6894f82460"
+        system = _SequentialSystem([block1])
+        assert system.get_hash() == "04714d9ee40c9baff8c528ed982a103c"
+        assert block1.get_hash() == system.get_hash()
+
+    def test_system_hash_with_2_steps(self):
+        block1 = _Block()
+        block2 = _Block()
+
+        system = _SequentialSystem([block1, block2])
+        assert system.get_hash() != block1.get_hash()
+        assert system.get_hash() == block2.get_hash() == "83196595c42f8eff9218c0ac8f80faf0"
+
+    def test_system_hash_with_3_steps(self):
+        block1 = _Block()
+        block2 = _Block()
+        block3 = _Block()
+
+        system = _SequentialSystem([block1, block2, block3])
+        assert system.get_hash() != block1.get_hash()
+        assert system.get_hash() != block2.get_hash()
+        assert block1.get_hash() != block2.get_hash()
+        assert system.get_hash() == block3.get_hash() == "5aaa5f0962baedf36f132ad39380761e"
 
     def test__repr_html_(self):
         block_instance = _Block()
-        system_instance = _System([block_instance, block_instance])
+        system_instance = _SequentialSystem([block_instance, block_instance])
+        html_representation = system_instance._repr_html_()
+
+        assert html_representation is not None
+
+
+class TestParallelSystem:
+    def test_parallel_system_init(self):
+        parallel_system = _ParallelSystem()
+        assert parallel_system is not None
+
+    def test_parallel_system_hash_no_steps(self):
+        system = _ParallelSystem()
+        assert system.get_hash() == ""
+
+    def test_parallel_system_hash_with_1_step(self):
+        block1 = _Block()
+
+        system = _ParallelSystem([block1])
+        assert system.get_hash() == "04714d9ee40c9baff8c528ed982a103c"
+        assert block1.get_hash() == system.get_hash()
+
+    def test_parallel_system_hash_with_2_steps(self):
+        block1 = _Block()
+        block2 = _Block()
+
+        system = _ParallelSystem([block1, block2])
+        assert system.get_hash() != block1.get_hash()
+        assert block1.get_hash() == block2.get_hash()
+        assert system.get_hash() != block2.get_hash()
+        assert system.get_hash() == "0a2f0c2eb736f15e4fb56be2aa93f1cc"
+
+    def test_parallel_system_hash_with_3_steps(self):
+        block1 = _Block()
+        block2 = _Block()
+        block3 = _Block()
+
+        system = _ParallelSystem([block1, block2, block3])
+        assert system.get_hash() != block1.get_hash()
+        assert system.get_hash() != block2.get_hash()
+        assert system.get_hash() != block3.get_hash()
+        assert block1.get_hash() == block2.get_hash() == block3.get_hash()
+        assert system.get_hash() == "b3b6cc4fcba0c7e3160ddf8eab3eb6eb"
+
+    def test_parallel_system__repr_html_(self):
+        block_instance = _Block()
+        system_instance = _ParallelSystem([block_instance, block_instance])
         html_representation = system_instance._repr_html_()
 
         assert html_representation is not None

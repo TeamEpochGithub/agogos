@@ -133,7 +133,70 @@ class _Block(_Base):
 
 
 @dataclass
-class _System(_Base):
+class _ParallelSystem(_Base):
+    """The _System class is the base class for all systems.
+
+    Parameters:
+    - steps (list[_Base]): The steps in the system.
+
+    Methods:
+    .. code-block:: python
+        def get_hash(self) -> str: # Get the hash of the system.
+
+        def get_parent(self) -> Any: # Get the parent of the system.
+
+        def get_children(self) -> list[Any]: # Get the children of the system
+
+        def _set_hash(self, prev_hash: str) -> None: # Set the hash of the system.
+    """
+
+    steps: list[_Base] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        """Post init function of _System class"""
+        super().__post_init__()
+
+        # Set parent and children
+        for step in self.steps:
+            step._set_parent(self)
+
+        self._set_children(self.steps)
+
+    def _set_hash(self, prev_hash: str) -> None:
+        """Set the hash of the system.
+
+        :param prev_hash: The hash of the previous block.
+        """
+        self._hash = prev_hash
+
+        if len(self.steps) == 1:
+            step = self.steps[0]
+            step._set_hash(prev_hash)
+            self._hash = step.get_hash()
+            return
+
+        for step in self.steps:
+            step._set_hash(prev_hash)
+            self._hash = hash(self.get_hash() + step.get_hash())
+
+    @abstractmethod
+    def concat(
+        self, original_data: Any, data_to_concat: Any, weight: float = 1.0
+    ) -> Any:
+        """Concatenate the transformed data.
+
+        :param original_data: The first input data.
+        :param data_to_concat: The second input data.
+        :param weight: Weight of data to concat
+        :return: The concatenated data.
+        """
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement concat method."
+        )
+
+
+@dataclass
+class _SequentialSystem(_Base):
     """The _System class is the base class for all systems.
 
     Parameters:
@@ -170,4 +233,5 @@ class _System(_Base):
         self._hash = prev_hash
 
         for step in self.steps:
-            self._hash = hash(self.get_hash() + step.get_hash())
+            step._set_hash(self.get_hash())
+            self._hash = step.get_hash()
