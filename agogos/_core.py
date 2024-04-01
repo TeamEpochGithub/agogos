@@ -166,6 +166,8 @@ class _ParallelSystem(_Base):
 
         :return: List of steps
         """
+        if self.steps is None:
+            return []
         return self.steps
 
     def _set_hash(self, prev_hash: str) -> None:
@@ -249,6 +251,8 @@ class _SequentialSystem(_Base):
 
         :return: List of steps
         """
+        if self.steps is None:
+            return []
         return self.steps
 
     def _set_hash(self, prev_hash: str) -> None:
