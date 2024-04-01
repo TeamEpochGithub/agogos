@@ -1,10 +1,25 @@
 from abc import abstractmethod
 from typing import Any
 
-from agogos._core import _Block, _SequentialSystem, _ParallelSystem
+from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 
 
-class Transformer(_Block):
+class TransformType(_Base):
+    """Abstract transform type describing a class that implements the transform function"""
+
+    @abstractmethod
+    def transform(self, data: Any, **transform_args: Any) -> Any:
+        """Transform the input data.
+
+        :param data: The input data.
+        :param transform_args: Keyword arguments.
+        :return: The transformed data."""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement transform method."
+        )
+
+
+class Transformer(TransformType, _Block):
     """The transformer block transforms any data it could be x or y data.
 
     Methods:
@@ -38,19 +53,8 @@ class Transformer(_Block):
         transformed_data = my_transformer.transform(data)
     """
 
-    @abstractmethod
-    def transform(self, data: Any, **transform_args: Any) -> Any:
-        """Transform the input data.
 
-        :param data: The input data.
-        :param transform_args: Keyword arguments.
-        :return: The transformed data."""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement transform method."
-        )
-
-
-class TransformingSystem(_SequentialSystem):
+class TransformingSystem(TransformType, _SequentialSystem):
     """A system that transforms the input data.
 
     Parameters:
@@ -91,10 +95,8 @@ class TransformingSystem(_SequentialSystem):
 
         # Assert all steps are a subclass of Transformer
         for step in self.steps:
-            if not isinstance(
-                step, (Transformer, TransformingSystem, ParallelTransformingSystem)
-            ):
-                raise TypeError(f"{step} is not an instance of a transformer")
+            if not isinstance(step, (TransformType)):
+                raise TypeError(f"{step} is not an instance of TransformType")
 
         super().__post_init__()
 
@@ -110,17 +112,15 @@ class TransformingSystem(_SequentialSystem):
             step_name = step.__class__.__name__
 
             step_args = transform_args.get(step_name, {})
-            if isinstance(
-                step, (Transformer, TransformingSystem, ParallelTransformingSystem)
-            ):
+            if isinstance(step, (TransformType)):
                 data = step.transform(data, **step_args)
             else:
-                raise TypeError(f"{step} is not an instance of a transformer")
+                raise TypeError(f"{step} is not an instance of TransformType")
 
         return data
 
 
-class ParallelTransformingSystem(_ParallelSystem):
+class ParallelTransformingSystem(TransformType, _ParallelSystem):
     """A system that transforms the input data in parallel.
 
     Parameters:
@@ -166,9 +166,8 @@ class ParallelTransformingSystem(_ParallelSystem):
 
         # Assert all steps are a subclass of Transformer or TransformingSystem
         for step in self.steps:
-            assert issubclass(step.__class__, Transformer) or issubclass(
-                step.__class__, TransformingSystem
-            ), f"{step} is not a subclass of Transformer or TransformingSystem"
+            if not isinstance(step, (TransformType)):
+                raise TypeError(f"{step} is not an instance of TransformType")
 
         super().__post_init__()
 
@@ -183,14 +182,12 @@ class ParallelTransformingSystem(_ParallelSystem):
             step_name = step.__class__.__name__
 
             step_args = transform_args.get(step_name, {})
-            if isinstance(
-                step, (Transformer, TransformingSystem, ParallelTransformingSystem)
-            ):
+            if isinstance(step, (TransformType)):
                 if i == 0:
                     data = step.transform(data, **step_args)
                 else:
                     data = self.concat(data, step.transform(data, **step_args))
             else:
-                raise TypeError(f"{step} is not a subclass of Transformer")
+                raise TypeError(f"{step} is not an instance of TransformType")
 
         return data
