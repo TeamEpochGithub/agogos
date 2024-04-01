@@ -161,6 +161,13 @@ class _ParallelSystem(_Base):
 
         self._set_children(self.steps)
 
+    def get_steps(self) -> list[_Base]:
+        """Return list of steps of _ParallelSystem
+
+        :return: List of steps
+        """
+        return self.steps
+
     def _set_hash(self, prev_hash: str) -> None:
         """Set the hash of the system.
 
@@ -236,6 +243,13 @@ class _SequentialSystem(_Base):
             step._set_parent(self)
 
         self._set_children(self.steps)
+
+    def get_steps(self) -> list[_Base]:
+        """Return list of steps of _ParallelSystem
+
+        :return: List of steps
+        """
+        return self.steps
 
     def _set_hash(self, prev_hash: str) -> None:
         """Set the hash of the system.
