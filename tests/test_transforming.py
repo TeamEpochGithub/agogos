@@ -173,6 +173,14 @@ class TestParallelTransformingSystem:
         assert isinstance(system, ParallelTransformingSystem)
         assert system is not None
 
+    def test_parallel_transforming_system_wrong_step(self):
+        class SubTransformer:
+            def transform(self, x):
+                return x
+
+        with pytest.raises(TypeError):
+            ParallelTransformingSystem(steps=[SubTransformer()])
+
     def test_parallel_transforming_system_transformers(self):
         transformer1 = Transformer()
         transformer2 = TransformingSystem()
