@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from typing import Any
+import copy
 
 from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 
@@ -178,16 +179,20 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
         :return: The transformed data.
         """
         # Loop through each step and call the transform method
-        for i, step in enumerate(self.steps):
+        num_steps = len(self.get_steps())
+        out_data = None
+        if len(self.get_steps()) == 0:
+            return data
+
+        for i, step in enumerate(self.get_steps()):
             step_name = step.__class__.__name__
 
             step_args = transform_args.get(step_name, {})
+
             if isinstance(step, (TransformType)):
-                if i == 0:
-                    data = step.transform(data, **step_args)
-                else:
-                    data = self.concat(data, step.transform(data, **step_args))
+                step_data = step.transform(copy.deepcopy(data), **step_args)
+                out_data = self.concat(out_data, step_data, 1 / num_steps)
             else:
                 raise TypeError(f"{step} is not an instance of TransformType")
 
-        return data
+        return out_data

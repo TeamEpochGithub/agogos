@@ -194,7 +194,9 @@ class TestParallelTransformingSystem:
                 return data
 
         class pts(ParallelTransformingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
                 return data1 + data2
 
         t1 = transformer()
@@ -210,7 +212,9 @@ class TestParallelTransformingSystem:
                 return data
 
         class pts(ParallelTransformingSystem):
-            def concat(self, data1, data2):
+            def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
                 return data1 + data2
 
         t1 = transformer()
@@ -237,7 +241,13 @@ class TestParallelTransformingSystem:
             system.transform([1, 2, 3])
 
     def test_pts_step_2_changed(self):
-        system = ParallelTransformingSystem()
+        class pts(ParallelTransformingSystem):
+            def concat(self, data1, data2, weight):
+                if data1 is None:
+                    return data2
+                return data1 + data2
+
+        system = pts()
 
         class transformer(Transformer):
             def transform(self, data):
