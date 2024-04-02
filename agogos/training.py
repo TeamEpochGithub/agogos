@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import copy
 from joblib import hash
 from typing import Any
 from dataclasses import dataclass
@@ -227,7 +228,9 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
             step_args = train_args.get(step_name, {})
 
             if isinstance(step, (TrainType)):
-                step_x, step_y = step.train(x, y, **step_args)
+                step_x, step_y = step.train(
+                    copy.deepcopy(x), copy.deepcopy(y), **step_args
+                )
                 out_x, out_y = (
                     self.concat(out_x, step_x, 1 / num_steps),
                     self.concat_labels(out_y, step_y, 1 / num_steps),
@@ -253,7 +256,7 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
             step_args = pred_args.get(step_name, {})
 
             if isinstance(step, (TrainType)):
-                step_x = step.predict(x, **step_args)
+                step_x = step.predict(copy.deepcopy(x), **step_args)
                 out_x = self.concat(out_x, step_x, 1 / num_steps)
             else:
                 raise TypeError(f"{step} is not an instance of TrainType")
