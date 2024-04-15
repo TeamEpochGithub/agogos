@@ -172,6 +172,7 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
 
     Parameters:
     - steps (list[Trainer | TrainingSystem | ParallelTrainingSystem]): The steps in the system.
+    - weights (list[float]): The weights of steps in the system, if not specified they are all equal.
 
     Methods:
     .. code-block:: python
@@ -222,7 +223,6 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
         """
 
         # Loop through each step and call the train method
-        num_steps = len(self.steps)
         out_x, out_y = None, None
         for i, step in enumerate(self.steps):
             step_name = step.__class__.__name__
@@ -234,8 +234,8 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
                     copy.deepcopy(x), copy.deepcopy(y), **step_args
                 )
                 out_x, out_y = (
-                    self.concat(out_x, step_x, 1 / num_steps),
-                    self.concat_labels(out_y, step_y, 1 / num_steps),
+                    self.concat(out_x, step_x, self.get_weights()[i]),
+                    self.concat_labels(out_y, step_y, self.get_weights()[i]),
                 )
             else:
                 raise TypeError(f"{step} is not an instance of TrainType")
@@ -250,7 +250,6 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
         """
 
         # Loop through each trainer and call the predict method
-        num_steps = len(self.steps)
         out_x = None
         for i, step in enumerate(self.steps):
             step_name = step.__class__.__name__
@@ -259,7 +258,7 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
 
             if isinstance(step, (TrainType)):
                 step_x = step.predict(copy.deepcopy(x), **step_args)
-                out_x = self.concat(out_x, step_x, 1 / num_steps)
+                out_x = self.concat(out_x, step_x, self.get_weights()[i])
             else:
                 raise TypeError(f"{step} is not an instance of TrainType")
 
