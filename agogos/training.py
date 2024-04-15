@@ -1,8 +1,10 @@
-from abc import abstractmethod
 import copy
-from joblib import hash
-from typing import Any
+from abc import abstractmethod
 from dataclasses import dataclass
+from typing import Any
+
+from joblib import hash
+
 from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 from agogos.transforming import TransformingSystem
 

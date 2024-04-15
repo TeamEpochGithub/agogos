@@ -1,6 +1,6 @@
+import copy
 from abc import abstractmethod
 from typing import Any
-import copy
 
 from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 

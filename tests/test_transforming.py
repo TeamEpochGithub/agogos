@@ -1,11 +1,12 @@
+import numpy as np
 import pytest
+
 from agogos.training import Trainer
 from agogos.transforming import (
     Transformer,
     TransformingSystem,
     ParallelTransformingSystem,
 )
-import numpy as np
 
 
 class TestTransformer:
@@ -259,3 +260,24 @@ class TestParallelTransformingSystem:
 
         with pytest.raises(TypeError):
             system.transform([1, 2, 3])
+
+    def test_transform_parallel_hashes(self):
+        class SubTransformer1(Transformer):
+            def transform(self, x):
+                return x
+
+        class SubTransformer2(Transformer):
+            def transform(self, x):
+                return x * 2
+
+        block1 = SubTransformer1()
+        block2 = SubTransformer2()
+
+        system1 = ParallelTransformingSystem(steps=[block1, block2])
+        system1_copy = ParallelTransformingSystem(steps=[block1, block2])
+        system2 = ParallelTransformingSystem(steps=[block2, block1])
+        system2_copy = ParallelTransformingSystem(steps=[block2, block1])
+
+        assert system1.get_hash() == system2.get_hash()
+        assert system1.get_hash() == system1_copy.get_hash()
+        assert system2.get_hash() == system2_copy.get_hash()
