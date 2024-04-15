@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import copy
+import warnings
 from joblib import hash
 from typing import Any
 from dataclasses import dataclass
@@ -131,6 +132,18 @@ class TrainingSystem(TrainType, _SequentialSystem):
         :param x: The input to the system.
         :param y: The output of the system.
         :return: The input and output of the system."""
+
+        set_of_steps = set()
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            set_of_steps.add(step_name)
+        if set_of_steps != set(train_args.keys()) and len(set_of_steps) == len(
+            train_args.keys()
+        ):
+            # Raise a warning and print all the keys that do not match
+            warnings.warn(
+                f"The following steps don't have any kwargs: {set_of_steps - set(train_args.keys())}"
+            )
 
         # Loop through each step and call the train method
         for step in self.steps:
