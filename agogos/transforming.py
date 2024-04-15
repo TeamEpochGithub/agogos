@@ -126,6 +126,7 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
 
     Parameters:
     - steps (list[Transformer | TransformingSystem | ParallelTransformingSystem]): The steps in the system.
+    - weights (list[float]): Weights of steps in system, if not specified they are all equal.
 
     Methods:
     .. code-block:: python
@@ -179,7 +180,6 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
         :return: The transformed data.
         """
         # Loop through each step and call the transform method
-        num_steps = len(self.get_steps())
         out_data = None
         if len(self.get_steps()) == 0:
             return data
@@ -191,7 +191,7 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
 
             if isinstance(step, (TransformType)):
                 step_data = step.transform(copy.deepcopy(data), **step_args)
-                out_data = self.concat(out_data, step_data, 1 / num_steps)
+                out_data = self.concat(out_data, step_data, self.get_weights()[i])
             else:
                 raise TypeError(f"{step} is not an instance of TransformType")
 
