@@ -1,4 +1,5 @@
 import pytest
+import warnings
 from agogos.training import Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline
 from agogos.transforming import Transformer, TransformingSystem
 import numpy as np
@@ -125,6 +126,56 @@ class TestTrainingSystem:
     def test_training_system_empty_hash(self):
         training_system = TrainingSystem()
         assert training_system.get_hash() == ""
+
+    def test_training_system_wrong_kwargs(self):
+        class Block1(Trainer):
+            def train(self, x, y, **kwargs):
+                return x, y
+
+            def predict(self, x, **pred_args):
+                return x
+
+        class Block2(Trainer):
+            def train(self, x, y, **kwargs):
+                return x, y
+
+            def predict(self, x, **pred_args):
+                return x
+
+        block1 = Block1()
+        block2 = Block2()
+        system = TrainingSystem(steps=[block1, block2])
+        kwargs = {"Block1": {}, "block2": {}}
+        with pytest.warns(
+            UserWarning,
+            match="The following steps do not exist but were given in the kwargs:",
+        ):
+            system.train([1, 2, 3], [1, 2, 3], **kwargs)
+            system.predict([1, 2, 3], **kwargs)
+
+    def test_training_system_right_kwargs(self):
+        class Block1(Trainer):
+            def train(self, x, y, **kwargs):
+                return x, y
+
+            def predict(self, x, **pred_args):
+                return x
+
+        class Block2(Trainer):
+            def train(self, x, y, **kwargs):
+                return x, y
+
+            def predict(self, x, **pred_args):
+                return x
+
+        block1 = Block1()
+        block2 = Block2()
+        system = TrainingSystem(steps=[block1, block2])
+        kwargs = {"Block1": {}, "Block2": {}}
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            system.train([1, 2, 3], [1, 2, 3], **kwargs)
+            system.predict([1, 2, 3], **kwargs)
+        assert not caught_warnings
 
 
 class TestParallelTrainingSystem:

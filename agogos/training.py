@@ -1,5 +1,8 @@
 import copy
+import warnings
+
 from abc import abstractmethod
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -134,6 +137,18 @@ class TrainingSystem(TrainType, _SequentialSystem):
         :param y: The output of the system.
         :return: The input and output of the system."""
 
+        set_of_steps = set()
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            set_of_steps.add(step_name)
+
+        if set_of_steps != set(train_args.keys()):
+            # Raise a warning and print all the keys that do not match
+            warnings.warn(
+                f"The following steps do not exist but were given in the kwargs: {set(train_args.keys()) - set_of_steps}",
+                UserWarning,
+            )
+
         # Loop through each step and call the train method
         for step in self.steps:
             step_name = step.__class__.__name__
@@ -152,6 +167,18 @@ class TrainingSystem(TrainType, _SequentialSystem):
         :param x: The input to the system.
         :return: The output of the system.
         """
+
+        set_of_steps = set()
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            set_of_steps.add(step_name)
+
+        if set_of_steps != set(pred_args.keys()):
+            # Raise a warning and print all the keys that do not match
+            warnings.warn(
+                f"The following steps do not exist but were given in the kwargs: {set(pred_args.keys()) - set_of_steps}",
+                UserWarning,
+            )
 
         # Loop through each step and call the predict method
         for step in self.steps:

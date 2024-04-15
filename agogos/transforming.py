@@ -2,6 +2,9 @@ import copy
 from abc import abstractmethod
 from typing import Any
 
+import warnings
+
+
 from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 
 
@@ -107,6 +110,16 @@ class TransformingSystem(TransformType, _SequentialSystem):
         :param data: The input data.
         :return: The transformed data.
         """
+
+        set_of_steps = set()
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            set_of_steps.add(step_name)
+        if set_of_steps != set(transform_args.keys()):
+            # Raise a warning and print all the keys that do not match
+            warnings.warn(
+                f"The following steps do not exist but were given in the kwargs: {set(transform_args.keys()) - set_of_steps}"
+            )
 
         # Loop through each step and call the transform method
         for step in self.steps:

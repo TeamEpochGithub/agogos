@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import pytest
 
@@ -163,6 +164,43 @@ class TestTransformingSystem:
     def test_transforming_system_empty_hash(self):
         transforming_system = TransformingSystem()
         assert transforming_system.get_hash() == ""
+
+    def test_transforming_system_wrong_kwargs(self):
+        class Block1(Transformer):
+            def transform(self, x, **kwargs):
+                return x
+
+        class Block2(Transformer):
+            def transform(self, x, **kwargs):
+                return x
+
+        block1 = Block1()
+        block2 = Block2()
+        system = TransformingSystem(steps=[block1, block2])
+        kwargs = {"Block1": {}, "block2": {}}
+        with pytest.warns(
+            UserWarning,
+            match="The following steps do not exist but were given in the kwargs:",
+        ):
+            system.transform([1, 2, 3], **kwargs)
+
+    def test_transforming_system_right_kwargs(self):
+        class Block1(Transformer):
+            def transform(self, x, **kwargs):
+                return x
+
+        class Block2(Transformer):
+            def transform(self, x, **kwargs):
+                return x
+
+        block1 = Block1()
+        block2 = Block2()
+        system = TransformingSystem(steps=[block1, block2])
+        kwargs = {"Block1": {}, "Block2": {}}
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            system.transform([1, 2, 3], **kwargs)
+
+        assert not caught_warnings
 
 
 class TestParallelTransformingSystem:
