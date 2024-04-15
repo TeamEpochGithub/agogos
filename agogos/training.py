@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import copy
 from joblib import hash
 from typing import Any
 from dataclasses import dataclass
@@ -6,7 +7,31 @@ from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 from agogos.transforming import TransformingSystem
 
 
-class Trainer(_Block):
+class TrainType(_Base):
+    """Abstract train type describing a class that implements two functions train and predict"""
+
+    @abstractmethod
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+        """Train the block.
+
+        :param x: The input data.
+        :param y: The target variable."""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement train method."
+        )
+
+    @abstractmethod
+    def predict(self, x: Any, **pred_args: Any) -> Any:
+        """Predict the target variable.
+
+        :param x: The input data.
+        :return: The predictions."""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement predict method."
+        )
+
+
+class Trainer(TrainType, _Block):
     """The trainer block is for blocks that need to train on two inputs and predict on one.
 
     Methods:
@@ -50,32 +75,12 @@ class Trainer(_Block):
         predictions = my_trainer.predict(x)
     """
 
-    @abstractmethod
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
-        """Train the block.
 
-        :param x: The input data.
-        :param y: The target variable."""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement train method."
-        )
-
-    @abstractmethod
-    def predict(self, x: Any, **pred_args: Any) -> Any:
-        """Predict the target variable.
-
-        :param x: The input data.
-        :return: The predictions."""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement predict method."
-        )
-
-
-class TrainingSystem(_SequentialSystem):
+class TrainingSystem(TrainType, _SequentialSystem):
     """A system that trains on the input data and labels.
 
     Parameters:
-    - steps (list[Trainer | TrainingSystem | ParallelTrainingSystem]): The steps in the system.
+    - steps (list[TrainType]): The steps in the system.
 
     Methods:
     .. code-block:: python
@@ -114,9 +119,9 @@ class TrainingSystem(_SequentialSystem):
         for step in self.steps:
             if not isinstance(
                 step,
-                (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline),
+                (TrainType),
             ):
-                raise TypeError(f"step: {step} is not an instance of a trainer")
+                raise TypeError(f"step: {step} is not an instance of TrainType")
 
         super().__post_init__()
 
@@ -132,12 +137,10 @@ class TrainingSystem(_SequentialSystem):
             step_name = step.__class__.__name__
 
             step_args = train_args.get(step_name, {})
-            if isinstance(
-                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
-            ):
+            if isinstance(step, (TrainType)):
                 x, y = step.train(x, y, **step_args)
             else:
-                raise TypeError(f"{step} is not a subclass of Trainer")
+                raise TypeError(f"{step} is not an instance of TrainType")
 
         return x, y
 
@@ -154,17 +157,15 @@ class TrainingSystem(_SequentialSystem):
 
             step_args = pred_args.get(step_name, {})
 
-            if isinstance(
-                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
-            ):
+            if isinstance(step, (TrainType)):
                 x = step.predict(x, **step_args)
             else:
-                raise TypeError(f"{step} is not a subclass of Trainer")
+                raise TypeError(f"{step} is not an instance of TrainType")
 
         return x
 
 
-class ParallelTrainingSystem(_ParallelSystem):
+class ParallelTrainingSystem(TrainType, _ParallelSystem):
     """A system that trains the input data in parallel.
 
     Parameters:
@@ -205,10 +206,8 @@ class ParallelTrainingSystem(_ParallelSystem):
 
         # Assert all steps correct instances
         for step in self.steps:
-            if not isinstance(
-                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
-            ):
-                raise TypeError(f"{step} is not an instance of a trainer")
+            if not isinstance(step, (TrainType)):
+                raise TypeError(f"{step} is not an instance of TrainType")
 
         super().__post_init__()
 
@@ -228,18 +227,16 @@ class ParallelTrainingSystem(_ParallelSystem):
 
             step_args = train_args.get(step_name, {})
 
-            if isinstance(
-                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
-            ):
-                step_x, step_y = step.train(x, y, **step_args)
+            if isinstance(step, (TrainType)):
+                step_x, step_y = step.train(
+                    copy.deepcopy(x), copy.deepcopy(y), **step_args
+                )
                 out_x, out_y = (
                     self.concat(out_x, step_x, 1 / num_steps),
                     self.concat_labels(out_y, step_y, 1 / num_steps),
                 )
             else:
-                raise TypeError(
-                    f"{step} is not a subclass of Trainer, TrainingSystem, ParallelTrainingSystem or Pipeline"
-                )
+                raise TypeError(f"{step} is not an instance of TrainType")
 
         return out_x, out_y
 
@@ -258,13 +255,11 @@ class ParallelTrainingSystem(_ParallelSystem):
 
             step_args = pred_args.get(step_name, {})
 
-            if isinstance(
-                step, (Trainer, TrainingSystem, ParallelTrainingSystem, Pipeline)
-            ):
-                step_x = step.predict(x, **step_args)
+            if isinstance(step, (TrainType)):
+                step_x = step.predict(copy.deepcopy(x), **step_args)
                 out_x = self.concat(out_x, step_x, 1 / num_steps)
             else:
-                raise TypeError(f"{step} is not an instance of a trainer")
+                raise TypeError(f"{step} is not an instance of TrainType")
 
         return out_x
 
@@ -282,7 +277,7 @@ class ParallelTrainingSystem(_ParallelSystem):
 
 
 @dataclass
-class Pipeline(_Base):
+class Pipeline(TrainType):
     """A pipeline of systems that can be trained and predicted.
 
     Parameters:
