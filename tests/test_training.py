@@ -390,6 +390,27 @@ class TestParallelTrainingSystem:
         with pytest.raises(TypeError):
             system.predict([1, 2, 3])
 
+    def test_train_parallel_hashes(self):
+        class SubTrainer1(Trainer):
+            def train(self, x, y):
+                return x, y
+
+        class SubTrainer2(Trainer):
+            def train(self, x, y):
+                return x * 2, y
+
+        block1 = SubTrainer1()
+        block2 = SubTrainer2()
+
+        system1 = ParallelTrainingSystem(steps=[block1, block2])
+        system1_copy = ParallelTrainingSystem(steps=[block1, block2])
+        system2 = ParallelTrainingSystem(steps=[block2, block1])
+        system2_copy = ParallelTrainingSystem(steps=[block2, block1])
+
+        assert system1.get_hash() == system2.get_hash()
+        assert system1.get_hash() == system1_copy.get_hash()
+        assert system2.get_hash() == system2_copy.get_hash()
+
 
 class TestPipeline:
     def test_pipeline_init(self):

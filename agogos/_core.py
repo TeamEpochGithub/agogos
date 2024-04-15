@@ -1,9 +1,10 @@
 """This module contains the core classes for all classes in the agogos package."""
-from pathlib import Path
-from dataclasses import field, dataclass
-from joblib import hash
 from abc import abstractmethod
+from dataclasses import field, dataclass
+from pathlib import Path
 from typing import Any
+
+from joblib import hash
 
 
 @dataclass
@@ -153,6 +154,10 @@ class _ParallelSystem(_Base):
 
     def __post_init__(self) -> None:
         """Post init function of _System class"""
+
+        # Sort the steps by name, to ensure consistent ordering of parallel computations
+        self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
+
         super().__post_init__()
 
         # Set parent and children
