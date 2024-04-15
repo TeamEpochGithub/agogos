@@ -137,12 +137,12 @@ class TrainingSystem(TrainType, _SequentialSystem):
         for step in self.steps:
             step_name = step.__class__.__name__
             set_of_steps.add(step_name)
-        if set_of_steps != set(train_args.keys()) and len(set_of_steps) == len(
-            train_args.keys()
-        ):
+
+        if set_of_steps != set(train_args.keys()):
             # Raise a warning and print all the keys that do not match
             warnings.warn(
-                f"The following steps don't have any kwargs: {set_of_steps - set(train_args.keys())}"
+                f"The following steps do not exist but were given in the kwargs: {set(train_args.keys()) - set_of_steps}",
+                UserWarning,
             )
 
         # Loop through each step and call the train method
@@ -163,6 +163,18 @@ class TrainingSystem(TrainType, _SequentialSystem):
         :param x: The input to the system.
         :return: The output of the system.
         """
+
+        set_of_steps = set()
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            set_of_steps.add(step_name)
+
+        if set_of_steps != set(pred_args.keys()):
+            # Raise a warning and print all the keys that do not match
+            warnings.warn(
+                f"The following steps do not exist but were given in the kwargs: {set(pred_args.keys()) - set_of_steps}",
+                UserWarning,
+            )
 
         # Loop through each step and call the predict method
         for step in self.steps:
