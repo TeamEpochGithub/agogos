@@ -211,9 +211,6 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
             if not isinstance(step, (TrainType)):
                 raise TypeError(f"{step} is not an instance of TrainType")
 
-        # Sort the steps by name, to ensure consistent ordering of parallel computations
-        self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
-
         super().__post_init__()
 
     def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:

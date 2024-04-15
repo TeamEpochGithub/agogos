@@ -170,9 +170,6 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
             if not isinstance(step, (TransformType)):
                 raise TypeError(f"{step} is not an instance of TransformType")
 
-        # Sort the steps by name, to ensure consistent ordering of parallel computations
-        self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
-
         super().__post_init__()
 
     def transform(self, data: Any, **transform_args: Any) -> Any:
