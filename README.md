@@ -20,7 +20,7 @@ This package contains many modules and classes necessary to construct the ml pip
 To generate pytest coverage report run
 
 ```shell
-pytest --cov=agogos --cov-report=html:coverage_re
+python -m pytest --cov=agogos --cov-report=html:coverage_re
 ```
 
 ## Documentation
