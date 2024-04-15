@@ -1,6 +1,9 @@
+import copy
 from abc import abstractmethod
 from typing import Any
-import copy
+
+import warnings
+
 
 from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 
@@ -108,6 +111,16 @@ class TransformingSystem(TransformType, _SequentialSystem):
         :return: The transformed data.
         """
 
+        set_of_steps = set()
+        for step in self.steps:
+            step_name = step.__class__.__name__
+            set_of_steps.add(step_name)
+        if set_of_steps != set(transform_args.keys()):
+            # Raise a warning and print all the keys that do not match
+            warnings.warn(
+                f"The following steps do not exist but were given in the kwargs: {set(transform_args.keys()) - set_of_steps}"
+            )
+
         # Loop through each step and call the transform method
         for step in self.steps:
             step_name = step.__class__.__name__
@@ -126,6 +139,7 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
 
     Parameters:
     - steps (list[Transformer | TransformingSystem | ParallelTransformingSystem]): The steps in the system.
+    - weights (list[float]): Weights of steps in system, if not specified they are all equal.
 
     Methods:
     .. code-block:: python
@@ -179,7 +193,6 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
         :return: The transformed data.
         """
         # Loop through each step and call the transform method
-        num_steps = len(self.get_steps())
         out_data = None
         if len(self.get_steps()) == 0:
             return data
@@ -191,7 +204,7 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
 
             if isinstance(step, (TransformType)):
                 step_data = step.transform(copy.deepcopy(data), **step_args)
-                out_data = self.concat(out_data, step_data, 1 / num_steps)
+                out_data = self.concat(out_data, step_data, self.get_weights()[i])
             else:
                 raise TypeError(f"{step} is not an instance of TransformType")
 

@@ -1,9 +1,10 @@
 """This module contains the core classes for all classes in the agogos package."""
-from pathlib import Path
-from dataclasses import field, dataclass
-from joblib import hash
 from abc import abstractmethod
+from dataclasses import field, dataclass
+from pathlib import Path
 from typing import Any
+
+from joblib import hash
 
 
 @dataclass
@@ -129,6 +130,7 @@ class _ParallelSystem(_Base):
 
     Parameters:
     - steps (list[_Base]): The steps in the system.
+    - weights (list[float]): Weights of steps in the system, if not specified they are equal.
 
     Methods:
     .. code-block:: python
@@ -150,14 +152,26 @@ class _ParallelSystem(_Base):
     """
 
     steps: list[_Base] = field(default_factory=list)
+    weights: list[float] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Post init function of _System class"""
+
+        # Sort the steps by name, to ensure consistent ordering of parallel computations
+        self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
+
         super().__post_init__()
 
         # Set parent and children
         for step in self.steps:
             step._set_parent(self)
+
+        # Set weights if they exist
+        if len(self.weights) == len(self.get_steps()):
+            [w / sum(self.weights) for w in self.weights]
+        else:
+            num_steps = len(self.get_steps())
+            self.weights = [1 / num_steps for x in self.steps]
 
         self._set_children(self.steps)
 
@@ -169,6 +183,14 @@ class _ParallelSystem(_Base):
         if self.steps is None:
             return []
         return self.steps
+
+    def get_weights(self) -> list[float]:
+        """Return list of weights of _ParallelSystem
+
+        :return: List of weights"""
+        if len(self.get_steps()) != len(self.weights):
+            raise TypeError("Mismatch between weights and steps")
+        return self.weights
 
     def _set_hash(self, prev_hash: str) -> None:
         """Set the hash of the system.
