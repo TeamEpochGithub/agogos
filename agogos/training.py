@@ -1,8 +1,10 @@
-from abc import abstractmethod
 import copy
-from joblib import hash
-from typing import Any
+from abc import abstractmethod
 from dataclasses import dataclass
+from typing import Any
+
+from joblib import hash
+
 from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 from agogos.transforming import TransformingSystem
 
@@ -208,6 +210,9 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
         for step in self.steps:
             if not isinstance(step, (TrainType)):
                 raise TypeError(f"{step} is not an instance of TrainType")
+
+        # Sort the steps by name, to ensure consistent ordering of parallel computations
+        self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
 
         super().__post_init__()
 

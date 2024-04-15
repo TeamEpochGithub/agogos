@@ -1,6 +1,6 @@
+import copy
 from abc import abstractmethod
 from typing import Any
-import copy
 
 from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
 
@@ -169,6 +169,9 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
         for step in self.steps:
             if not isinstance(step, (TransformType)):
                 raise TypeError(f"{step} is not an instance of TransformType")
+
+        # Sort the steps by name, to ensure consistent ordering of parallel computations
+        self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
 
         super().__post_init__()
 
