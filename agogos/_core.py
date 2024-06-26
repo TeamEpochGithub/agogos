@@ -1,6 +1,7 @@
 """This module contains the core classes for all classes in the agogos package."""
+
 from abc import abstractmethod
-from dataclasses import field, dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -46,43 +47,45 @@ class _Base:
         """
         return self._hash
 
-    def get_parent(self) -> Any:
+    def get_parent(self) -> Any:  # noqa: ANN401
         """Get the parent of the block.
 
-        :return: Parent of the block
+        :return: Parent of the block.
         """
         return self._parent
 
     def get_children(self) -> list[Any]:
         """Get the children of the block.
 
-        :return: Children of the block"""
+        :return: Children of the block
+        """
         return self._children
 
     def save_to_html(self, file_path: Path) -> None:
-        """Write html representation of class to file
+        """Write html representation of class to file.
 
-        :param file_path: File path to write to"""
+        :param file_path: File path to write to.
+        """
         html = self._repr_html_()
         with open(file_path, "w") as file:
             file.write(html)
 
-    def _set_parent(self, parent: Any) -> None:
+    def _set_parent(self, parent: Any) -> None:  # noqa: ANN401
         """Set the parent of the block.
 
-        :param parent: Parent of the block
+        :param parent: Parent of the block.
         """
         self._parent = parent
 
     def _set_children(self, children: list[Any]) -> None:
         """Set the children of the block.
 
-        :param children: Children of the block
+        :param children: Children of the block.
         """
         self._children = children
 
     def _repr_html_(self) -> str:
-        """Return representation of class in html format
+        """Return representation of class in html format.
 
         :return: String representation of html
         """
@@ -155,8 +158,7 @@ class _ParallelSystem(_Base):
     weights: list[float] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        """Post init function of _System class"""
-
+        """Post init function of _System class."""
         # Sort the steps by name, to ensure consistent ordering of parallel computations
         self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
 
@@ -164,7 +166,7 @@ class _ParallelSystem(_Base):
 
         # Set parent and children
         for step in self.steps:
-            step._set_parent(self)
+            step._set_parent(self)  # noqa: SLF001
 
         # Set weights if they exist
         if len(self.weights) == len(self.get_steps()):
@@ -176,18 +178,19 @@ class _ParallelSystem(_Base):
         self._set_children(self.steps)
 
     def get_steps(self) -> list[_Base]:
-        """Return list of steps of _ParallelSystem
+        """Return list of steps of _ParallelSystem.
 
-        :return: List of steps
+        :return: List of steps.
         """
-        if self.steps is None:
+        if not self.steps:
             return []
         return self.steps
 
     def get_weights(self) -> list[float]:
-        """Return list of weights of _ParallelSystem
+        """Return list of weights of _ParallelSystem.
 
-        :return: List of weights"""
+        :return: List of weights.
+        """
         if len(self.get_steps()) != len(self.weights):
             raise TypeError("Mismatch between weights and steps")
         return self.weights
@@ -206,32 +209,28 @@ class _ParallelSystem(_Base):
         # System is one step and should act as such
         if len(self.steps) == 1:
             step = self.steps[0]
-            step._set_hash(prev_hash)
+            step._set_hash(prev_hash)  # noqa: SLF001
             self._hash = step.get_hash()
             return
 
         # System has at least two steps so hash should become a combination
         total = self.get_hash()
         for step in self.steps:
-            step._set_hash(prev_hash)
+            step._set_hash(prev_hash)  # noqa: SLF001
             total = total + step.get_hash()
 
         self._hash = hash(total)
 
     @abstractmethod
-    def concat(
-        self, original_data: Any, data_to_concat: Any, weight: float = 1.0
-    ) -> Any:
+    def concat(self, original_data: Any, data_to_concat: Any, weight: float = 1.0) -> Any:  # noqa: ANN401
         """Concatenate the transformed data.
 
         :param original_data: The first input data.
         :param data_to_concat: The second input data.
-        :param weight: Weight of data to concat
+        :param weight: Weight of data to concat.
         :return: The concatenated data.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement concat method."
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement concat method.")
 
 
 @dataclass
@@ -259,21 +258,21 @@ class _SequentialSystem(_Base):
     steps: list[_Base] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        """Post init function of _System class"""
+        """Post init function of _System class."""
         super().__post_init__()
 
         # Set parent and children
         for step in self.steps:
-            step._set_parent(self)
+            step._set_parent(self)  # noqa: SLF001
 
         self._set_children(self.steps)
 
     def get_steps(self) -> list[_Base]:
-        """Return list of steps of _ParallelSystem
+        """Return list of steps of _ParallelSystem.
 
-        :return: List of steps
+        :return: List of steps.
         """
-        if self.steps is None:
+        if not self.steps:
             return []
         return self.steps
 
@@ -286,5 +285,5 @@ class _SequentialSystem(_Base):
 
         # Set hash of each step using previous hash and then update hash with last step
         for step in self.steps:
-            step._set_hash(self.get_hash())
+            step._set_hash(self.get_hash())  # noqa: SLF001
             self._hash = step.get_hash()
