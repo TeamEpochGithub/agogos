@@ -60,6 +60,7 @@ mdurl==0.1.2
 myst-parser==3.0.1
 nodeenv==1.9.1
     # via pre-commit
+numpy==2.0.0
 packaging==24.1
     # via pytest
     # via sphinx
