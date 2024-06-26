@@ -5,7 +5,7 @@ on:
     branches: ["v*"]
 
 jobs:
-  tests:
+  pytest:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
