@@ -47,7 +47,7 @@ class _Base:
         """
         return self._hash
 
-    def get_parent(self) -> Any:
+    def get_parent(self) -> Any:  # noqa: ANN401
         """Get the parent of the block.
 
         :return: Parent of the block.
@@ -70,7 +70,7 @@ class _Base:
         with open(file_path, "w") as file:
             file.write(html)
 
-    def _set_parent(self, parent: Any) -> None:
+    def _set_parent(self, parent: Any) -> None:  # noqa: ANN401
         """Set the parent of the block.
 
         :param parent: Parent of the block.
@@ -166,7 +166,7 @@ class _ParallelSystem(_Base):
 
         # Set parent and children
         for step in self.steps:
-            step._set_parent(self)
+            step._set_parent(self)  # noqa: SLF001
 
         # Set weights if they exist
         if len(self.weights) == len(self.get_steps()):
@@ -209,20 +209,20 @@ class _ParallelSystem(_Base):
         # System is one step and should act as such
         if len(self.steps) == 1:
             step = self.steps[0]
-            step._set_hash(prev_hash)
+            step._set_hash(prev_hash)  # noqa: SLF001
             self._hash = step.get_hash()
             return
 
         # System has at least two steps so hash should become a combination
         total = self.get_hash()
         for step in self.steps:
-            step._set_hash(prev_hash)
+            step._set_hash(prev_hash)  # noqa: SLF001
             total = total + step.get_hash()
 
         self._hash = hash(total)
 
     @abstractmethod
-    def concat(self, original_data: Any, data_to_concat: Any, weight: float = 1.0) -> Any:
+    def concat(self, original_data: Any, data_to_concat: Any, weight: float = 1.0) -> Any:  # noqa: ANN401
         """Concatenate the transformed data.
 
         :param original_data: The first input data.
@@ -263,7 +263,7 @@ class _SequentialSystem(_Base):
 
         # Set parent and children
         for step in self.steps:
-            step._set_parent(self)
+            step._set_parent(self)  # noqa: SLF001
 
         self._set_children(self.steps)
 
@@ -285,5 +285,5 @@ class _SequentialSystem(_Base):
 
         # Set hash of each step using previous hash and then update hash with last step
         for step in self.steps:
-            step._set_hash(self.get_hash())
+            step._set_hash(self.get_hash())  # noqa: SLF001
             self._hash = step.get_hash()

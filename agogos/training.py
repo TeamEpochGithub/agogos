@@ -16,7 +16,7 @@ class TrainType(_Base):
     """Abstract train type describing a class that implements two functions train and predict."""
 
     @abstractmethod
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:  # noqa: ANN401
         """Train the block.
 
         :param x: The input data.
@@ -25,7 +25,7 @@ class TrainType(_Base):
         raise NotImplementedError(f"{self.__class__.__name__} does not implement train method.")
 
     @abstractmethod
-    def predict(self, x: Any, **pred_args: Any) -> Any:
+    def predict(self, x: Any, **pred_args: Any) -> Any:  # noqa: ANN401
         """Predict the target variable.
 
         :param x: The input data.
@@ -128,7 +128,7 @@ class TrainingSystem(TrainType, _SequentialSystem):
 
         super().__post_init__()
 
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:  # noqa: ANN401
         """Train the system.
 
         :param x: The input to the system.
@@ -145,6 +145,7 @@ class TrainingSystem(TrainType, _SequentialSystem):
             warnings.warn(
                 f"The following steps do not exist but were given in the kwargs: {set(train_args.keys()) - set_of_steps}",
                 UserWarning,
+                stacklevel=2,
             )
 
         # Loop through each step and call the train method
@@ -159,7 +160,7 @@ class TrainingSystem(TrainType, _SequentialSystem):
 
         return x, y
 
-    def predict(self, x: Any, **pred_args: Any) -> Any:
+    def predict(self, x: Any, **pred_args: Any) -> Any:  # noqa: ANN401
         """Predict the output of the system.
 
         :param x: The input to the system.
@@ -175,6 +176,7 @@ class TrainingSystem(TrainType, _SequentialSystem):
             warnings.warn(
                 f"The following steps do not exist but were given in the kwargs: {set(pred_args.keys()) - set_of_steps}",
                 UserWarning,
+                stacklevel=2,
             )
 
         # Loop through each step and call the predict method
@@ -239,7 +241,7 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
 
         super().__post_init__()
 
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:  # noqa: ANN401
         """Train the system.
 
         :param x: The input to the system.
@@ -264,7 +266,7 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
 
         return out_x, out_y
 
-    def predict(self, x: Any, **pred_args: Any) -> Any:
+    def predict(self, x: Any, **pred_args: Any) -> Any:  # noqa: ANN401
         """Predict the output of the system.
 
         :param x: The input to the system.
@@ -285,7 +287,7 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
 
         return out_x
 
-    def concat_labels(self, original_data: Any, data_to_concat: Any, weight: float = 1.0) -> Any:
+    def concat_labels(self, original_data: Any, data_to_concat: Any, weight: float = 1.0) -> Any:  # noqa: ANN401
         """Concatenate the transformed labels. Will use concat method if not overridden.
 
         :param original_data: The first input data.
@@ -364,12 +366,12 @@ class Pipeline(TrainType):
 
         for sys in systems:
             if sys is not None:
-                sys._set_parent(self)
+                sys._set_parent(self)  # noqa: SLF001
                 children.append(sys)
 
         self._set_children(children)
 
-    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
+    def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:  # noqa: ANN401
         """Train the system.
 
         :param x: The input to the system.
@@ -390,7 +392,7 @@ class Pipeline(TrainType):
 
         return x, y
 
-    def predict(self, x: Any, **pred_args: Any) -> Any:
+    def predict(self, x: Any, **pred_args: Any) -> Any:  # noqa: ANN401
         """Predict the output of the system.
 
         :param x: The input to the system.
@@ -415,27 +417,27 @@ class Pipeline(TrainType):
 
         xy_hash = ""
         if self.x_sys is not None:
-            self.x_sys._set_hash(self.get_hash())
+            self.x_sys._set_hash(self.get_hash())  # noqa: SLF001
             xy_hash += self.x_sys.get_hash()
         if self.y_sys is not None:
-            self.y_sys._set_hash(self.get_hash())
+            self.y_sys._set_hash(self.get_hash())  # noqa: SLF001
             xy_hash += self.y_sys.get_hash()[::-1]  # Reversed for edge case where you have two pipelines with the same system but one in x the other in y
 
         if xy_hash != "":
             self._hash = hash(xy_hash)
 
         if self.train_sys is not None:
-            self.train_sys._set_hash(self.get_hash())
+            self.train_sys._set_hash(self.get_hash())  # noqa: SLF001
             training_hash = self.train_sys.get_hash()
             if training_hash != "":
                 self._hash = hash(self._hash + training_hash)
 
         predlabel_hash = ""
         if self.pred_sys is not None:
-            self.pred_sys._set_hash(self.get_hash())
+            self.pred_sys._set_hash(self.get_hash())  # noqa: SLF001
             predlabel_hash += self.pred_sys.get_hash()
         if self.label_sys is not None:
-            self.label_sys._set_hash(self.get_hash())
+            self.label_sys._set_hash(self.get_hash())  # noqa: SLF001
             predlabel_hash += self.label_sys.get_hash()
 
         if predlabel_hash != "":
