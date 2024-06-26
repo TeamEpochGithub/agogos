@@ -1,6 +1,7 @@
 """This module contains the core classes for all classes in the agogos package."""
+
 from abc import abstractmethod
-from dataclasses import field, dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -56,13 +57,15 @@ class _Base:
     def get_children(self) -> list[Any]:
         """Get the children of the block.
 
-        :return: Children of the block"""
+        :return: Children of the block
+        """
         return self._children
 
     def save_to_html(self, file_path: Path) -> None:
         """Write html representation of class to file
 
-        :param file_path: File path to write to"""
+        :param file_path: File path to write to
+        """
         html = self._repr_html_()
         with open(file_path, "w") as file:
             file.write(html)
@@ -156,7 +159,6 @@ class _ParallelSystem(_Base):
 
     def __post_init__(self) -> None:
         """Post init function of _System class"""
-
         # Sort the steps by name, to ensure consistent ordering of parallel computations
         self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
 
@@ -180,14 +182,15 @@ class _ParallelSystem(_Base):
 
         :return: List of steps
         """
-        if self.steps is None:
+        if not self.steps:
             return []
         return self.steps
 
     def get_weights(self) -> list[float]:
         """Return list of weights of _ParallelSystem
 
-        :return: List of weights"""
+        :return: List of weights
+        """
         if len(self.get_steps()) != len(self.weights):
             raise TypeError("Mismatch between weights and steps")
         return self.weights
@@ -219,9 +222,7 @@ class _ParallelSystem(_Base):
         self._hash = hash(total)
 
     @abstractmethod
-    def concat(
-        self, original_data: Any, data_to_concat: Any, weight: float = 1.0
-    ) -> Any:
+    def concat(self, original_data: Any, data_to_concat: Any, weight: float = 1.0) -> Any:
         """Concatenate the transformed data.
 
         :param original_data: The first input data.
@@ -229,9 +230,7 @@ class _ParallelSystem(_Base):
         :param weight: Weight of data to concat
         :return: The concatenated data.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement concat method."
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement concat method.")
 
 
 @dataclass
@@ -273,7 +272,7 @@ class _SequentialSystem(_Base):
 
         :return: List of steps
         """
-        if self.steps is None:
+        if not self.steps:
             return []
         return self.steps
 
