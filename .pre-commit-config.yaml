@@ -35,11 +35,10 @@ repos:
     rev: v0.18
     hooks:
       - id: validate-pyproject
-#  TODO(Jeffrey): Uncomment this after adding #84
-#  - repo: https://github.com/citation-file-format/cffconvert
-#    rev: b6045d78aac9e02b039703b030588d54d53262ac
-#    hooks:
-#      - id: validate-cff
+  - repo: https://github.com/citation-file-format/cffconvert
+    rev: b6045d78aac9e02b039703b030588d54d53262ac
+    hooks:
+      - id: validate-cff
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
