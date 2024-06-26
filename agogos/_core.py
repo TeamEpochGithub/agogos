@@ -1,15 +1,20 @@
 """This module contains the core classes for all classes in the agogos package."""
-
-from abc import abstractmethod
+import numbers
+from abc import abstractmethod, ABC
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar, Generic
 
 from joblib import hash
 
+_ParentT = TypeVar("_ParentT", bound="_Base")
+_ChildT = TypeVar("_ChildT", bound="_Base")
+_DT = TypeVar("_DT")
 
-@dataclass
-class _Base:
+
+@dataclass(slots=True)
+class _Base(Generic[_ParentT, _ChildT]):
     """The _Base class is the base class for all classes in the agogos package.
 
     Methods:
@@ -26,12 +31,13 @@ class _Base:
         def save_to_html(self, file_path: Path) -> None:
             # Save html format to file_path
     """
+    _parent: _ParentT | None = None
+    _children: Iterable[_ChildT] = field(default_factory=list)
+    _hash: str = field(init=False)
 
     def __post_init__(self) -> None:
         """Initialize the block."""
         self._set_hash("")
-        self._set_parent(None)
-        self._set_children([])
 
     def _set_hash(self, prev_hash: str) -> None:
         """Set the hash of the block.
@@ -47,14 +53,14 @@ class _Base:
         """
         return self._hash
 
-    def get_parent(self) -> Any:  # noqa: ANN401
+    def get_parent(self) -> _ParentT:  # noqa: ANN401
         """Get the parent of the block.
 
         :return: Parent of the block.
         """
         return self._parent
 
-    def get_children(self) -> list[Any]:
+    def get_children(self) -> Iterable[_ChildT]:
         """Get the children of the block.
 
         :return: Children of the block
@@ -70,14 +76,14 @@ class _Base:
         with open(file_path, "w") as file:
             file.write(html)
 
-    def _set_parent(self, parent: Any) -> None:  # noqa: ANN401
+    def _set_parent(self, parent: _ParentT | None) -> None:  # noqa: ANN401
         """Set the parent of the block.
 
         :param parent: Parent of the block.
         """
         self._parent = parent
 
-    def _set_children(self, children: list[Any]) -> None:
+    def _set_children(self, children: Iterable[_ChildT]) -> None:
         """Set the children of the block.
 
         :param children: Children of the block.
@@ -127,8 +133,8 @@ class _Block(_Base):
     """
 
 
-@dataclass
-class _ParallelSystem(_Base):
+@dataclass(slots=True)
+class _ParallelSystem(ABC, Generic[_DT], _Base):
     """The _System class is the base class for all systems.
 
     Parameters:
@@ -154,8 +160,8 @@ class _ParallelSystem(_Base):
             # Save html format to file_path
     """
 
-    steps: list[_Base] = field(default_factory=list)
-    weights: list[float] = field(default_factory=list)
+    steps: Sequence[_ChildT] = field(default_factory=list)
+    weights: Sequence[numbers.Real] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Post init function of _System class."""
@@ -177,16 +183,14 @@ class _ParallelSystem(_Base):
 
         self._set_children(self.steps)
 
-    def get_steps(self) -> list[_Base]:
+    def get_steps(self) -> Sequence[_ChildT]:
         """Return list of steps of _ParallelSystem.
 
         :return: List of steps.
         """
-        if not self.steps:
-            return []
         return self.steps
 
-    def get_weights(self) -> list[float]:
+    def get_weights(self) -> Sequence[numbers.Real]:
         """Return list of weights of _ParallelSystem.
 
         :return: List of weights.
@@ -222,7 +226,7 @@ class _ParallelSystem(_Base):
         self._hash = hash(total)
 
     @abstractmethod
-    def concat(self, original_data: Any, data_to_concat: Any, weight: float = 1.0) -> Any:  # noqa: ANN401
+    def concat(self, original_data: _DT, data_to_concat: _DT, weight: numbers.Real = 1.0) -> _DT:  # noqa: ANN401
         """Concatenate the transformed data.
 
         :param original_data: The first input data.
@@ -255,7 +259,7 @@ class _SequentialSystem(_Base):
             # Save html format to file_path
     """
 
-    steps: list[_Base] = field(default_factory=list)
+    steps: Sequence[_ChildT] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Post init function of _System class."""
@@ -267,7 +271,7 @@ class _SequentialSystem(_Base):
 
         self._set_children(self.steps)
 
-    def get_steps(self) -> list[_Base]:
+    def get_steps(self) -> Sequence[_ChildT]:
         """Return list of steps of _ParallelSystem.
 
         :return: List of steps.
