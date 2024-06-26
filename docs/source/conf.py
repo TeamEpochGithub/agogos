@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 project = "Agogos"
-copyright = "2024, Jasper van Selm"
+copyright = "2024, Jasper van Selm"  # noqa: A001
 author = "Jasper van Selm"
 
 # Add root path of repository
