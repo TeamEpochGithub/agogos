@@ -1,3 +1,5 @@
+"""Base classes related to transforming pipelines."""
+
 import copy
 import warnings
 from abc import abstractmethod
@@ -7,7 +9,7 @@ from agogos._core import _Base, _Block, _ParallelSystem, _SequentialSystem
 
 
 class TransformType(_Base):
-    """Abstract transform type describing a class that implements the transform function"""
+    """Abstract transform type describing a class that implements the transform function."""
 
     @abstractmethod
     def transform(self, data: Any, **transform_args: Any) -> Any:

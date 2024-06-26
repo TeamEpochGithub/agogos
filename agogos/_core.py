@@ -50,7 +50,7 @@ class _Base:
     def get_parent(self) -> Any:
         """Get the parent of the block.
 
-        :return: Parent of the block
+        :return: Parent of the block.
         """
         return self._parent
 
@@ -62,9 +62,9 @@ class _Base:
         return self._children
 
     def save_to_html(self, file_path: Path) -> None:
-        """Write html representation of class to file
+        """Write html representation of class to file.
 
-        :param file_path: File path to write to
+        :param file_path: File path to write to.
         """
         html = self._repr_html_()
         with open(file_path, "w") as file:
@@ -73,19 +73,19 @@ class _Base:
     def _set_parent(self, parent: Any) -> None:
         """Set the parent of the block.
 
-        :param parent: Parent of the block
+        :param parent: Parent of the block.
         """
         self._parent = parent
 
     def _set_children(self, children: list[Any]) -> None:
         """Set the children of the block.
 
-        :param children: Children of the block
+        :param children: Children of the block.
         """
         self._children = children
 
     def _repr_html_(self) -> str:
-        """Return representation of class in html format
+        """Return representation of class in html format.
 
         :return: String representation of html
         """
@@ -158,7 +158,7 @@ class _ParallelSystem(_Base):
     weights: list[float] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        """Post init function of _System class"""
+        """Post init function of _System class."""
         # Sort the steps by name, to ensure consistent ordering of parallel computations
         self.steps = sorted(self.steps, key=lambda x: x.__class__.__name__)
 
@@ -178,18 +178,18 @@ class _ParallelSystem(_Base):
         self._set_children(self.steps)
 
     def get_steps(self) -> list[_Base]:
-        """Return list of steps of _ParallelSystem
+        """Return list of steps of _ParallelSystem.
 
-        :return: List of steps
+        :return: List of steps.
         """
         if not self.steps:
             return []
         return self.steps
 
     def get_weights(self) -> list[float]:
-        """Return list of weights of _ParallelSystem
+        """Return list of weights of _ParallelSystem.
 
-        :return: List of weights
+        :return: List of weights.
         """
         if len(self.get_steps()) != len(self.weights):
             raise TypeError("Mismatch between weights and steps")
@@ -227,7 +227,7 @@ class _ParallelSystem(_Base):
 
         :param original_data: The first input data.
         :param data_to_concat: The second input data.
-        :param weight: Weight of data to concat
+        :param weight: Weight of data to concat.
         :return: The concatenated data.
         """
         raise NotImplementedError(f"{self.__class__.__name__} does not implement concat method.")
@@ -258,7 +258,7 @@ class _SequentialSystem(_Base):
     steps: list[_Base] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        """Post init function of _System class"""
+        """Post init function of _System class."""
         super().__post_init__()
 
         # Set parent and children
@@ -268,9 +268,9 @@ class _SequentialSystem(_Base):
         self._set_children(self.steps)
 
     def get_steps(self) -> list[_Base]:
-        """Return list of steps of _ParallelSystem
+        """Return list of steps of _ParallelSystem.
 
-        :return: List of steps
+        :return: List of steps.
         """
         if not self.steps:
             return []

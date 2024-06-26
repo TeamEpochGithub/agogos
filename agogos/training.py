@@ -1,3 +1,5 @@
+"""Base classes related to training pipelines."""
+
 import copy
 import warnings
 from abc import abstractmethod
@@ -11,7 +13,7 @@ from agogos.transforming import TransformingSystem
 
 
 class TrainType(_Base):
-    """Abstract train type describing a class that implements two functions train and predict"""
+    """Abstract train type describing a class that implements two functions train and predict."""
 
     @abstractmethod
     def train(self, x: Any, y: Any, **train_args: Any) -> tuple[Any, Any]:
@@ -288,7 +290,7 @@ class ParallelTrainingSystem(TrainType, _ParallelSystem):
 
         :param original_data: The first input data.
         :param data_to_concat: The second input data.
-        :param weight: Weight of data to concat
+        :param weight: Weight of data to concat.
         :return: The concatenated data.
         """
         return self.concat(original_data, data_to_concat, weight)
