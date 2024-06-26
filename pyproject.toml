@@ -16,3 +16,11 @@ dependencies= [
     # hashing
     "joblib>=1.3.2"
 ]
+
+[tool.pydoclint]
+style = "sphinx"
+arg-type-hints-in-docstring = false
+arg-type-hints-in-signature = true
+skip-checking-short-docstrings = false
+check-return-types = false
+show-filenames-in-every-violation-message = true
