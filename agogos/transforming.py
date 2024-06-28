@@ -14,7 +14,6 @@ _R = TypeVar("_R")
 class TransformType(Generic[_T, _R], _Base):
     """Abstract transform type describing a class that implements the transform function."""
 
-    @abstractmethod
     def transform(self, data: _T, **transform_args: Any) -> _T | _R:
         """Transform the input data.
 

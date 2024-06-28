@@ -33,9 +33,9 @@ class _Base:
             # Save html format to file_path
     """
 
-    _parent: _Base | None = None
-    _children: Iterable[_Base] = field(default_factory=list)
-    _hash: str = field(init=False)
+    _parent: _Base | None = field(default=None, init=False)
+    _children: Iterable[_Base] = field(default_factory=list, init=False)
+    _hash: str = field(default="", init=False)
 
     def __post_init__(self) -> None:
         """Initialize the block."""
@@ -136,7 +136,7 @@ class _Block(_Base):
 
 
 @dataclass
-class _ParallelSystem(ABC, Generic[_DT], _Base):
+class _ParallelSystem(Generic[_DT], _Base):
     """The _System class is the base class for all systems.
 
     Parameters:
@@ -228,7 +228,6 @@ class _ParallelSystem(ABC, Generic[_DT], _Base):
 
         self._hash = hash(total)
 
-    @abstractmethod
     def concat(self, original_data: _DT | None, data_to_concat: _DT, weight: float = 1.0) -> _DT:
         """Concatenate the transformed data.
 

@@ -16,11 +16,9 @@ _YT = TypeVar("_YT")
 _PT = TypeVar("_PT")
 
 
-@dataclass
-class TrainType(ABC, Generic[_XT, _YT, _PT], _Base):
+class TrainType(Generic[_XT, _YT, _PT], _Base):
     """Abstract train type describing a class that implements two functions train and predict."""
 
-    @abstractmethod
     def train(self, x: _XT, y: _YT, **train_args: Any) -> tuple[_XT | _PT, _YT]:
         """Train the block.
 
@@ -31,7 +29,6 @@ class TrainType(ABC, Generic[_XT, _YT, _PT], _Base):
         """
         raise NotImplementedError(f"{self.__class__.__name__} does not implement train method.")
 
-    @abstractmethod
     def predict(self, x: _XT, **pred_args: Any) -> _XT | _PT:
         """Predict the target variable.
 
@@ -42,7 +39,6 @@ class TrainType(ABC, Generic[_XT, _YT, _PT], _Base):
         raise NotImplementedError(f"{self.__class__.__name__} does not implement predict method.")
 
 
-@dataclass
 class Trainer(TrainType[_XT, _YT, _PT], _Block):
     """The trainer block is for blocks that need to train on two inputs and predict on one.
 
@@ -89,7 +85,6 @@ class Trainer(TrainType[_XT, _YT, _PT], _Block):
     """
 
 
-@dataclass
 class TrainingSystem(TrainType[_XT, _YT, _PT], _SequentialSystem):
     """A system that trains on the input data and labels.
 
@@ -265,7 +260,7 @@ class ParallelTrainingSystem(TrainType[_XT, _YT, _PT], _ParallelSystem[_PT]):
 
             step_args = train_args.get(step_name, {})
 
-            if isinstance(step, (TrainType)):
+            if isinstance(step, TrainType):
                 step_x, step_y = step.train(copy.deepcopy(x), copy.deepcopy(y), **step_args)
                 out_x, out_y = (
                     self.concat(out_x, step_x, self.get_weights()[i]),
