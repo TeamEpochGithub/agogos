@@ -1,20 +1,21 @@
 """This module contains the core classes for all classes in the agogos package."""
-import numbers
-from abc import abstractmethod, ABC
+
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, TypeVar, Generic
+from typing import Annotated, Generic, TypeVar
 
+from annotated_types import MinLen
 from joblib import hash
 
-_ParentT = TypeVar("_ParentT", bound="_Base")
-_ChildT = TypeVar("_ChildT", bound="_Base")
 _DT = TypeVar("_DT")
 
 
-@dataclass(slots=True)
-class _Base(Generic[_ParentT, _ChildT]):
+@dataclass
+class _Base:
     """The _Base class is the base class for all classes in the agogos package.
 
     Methods:
@@ -31,8 +32,9 @@ class _Base(Generic[_ParentT, _ChildT]):
         def save_to_html(self, file_path: Path) -> None:
             # Save html format to file_path
     """
-    _parent: _ParentT | None = None
-    _children: Iterable[_ChildT] = field(default_factory=list)
+
+    _parent: _Base | None = None
+    _children: Iterable[_Base] = field(default_factory=list)
     _hash: str = field(init=False)
 
     def __post_init__(self) -> None:
@@ -53,14 +55,14 @@ class _Base(Generic[_ParentT, _ChildT]):
         """
         return self._hash
 
-    def get_parent(self) -> _ParentT:  # noqa: ANN401
+    def get_parent(self) -> _Base | None:
         """Get the parent of the block.
 
         :return: Parent of the block.
         """
         return self._parent
 
-    def get_children(self) -> Iterable[_ChildT]:
+    def get_children(self) -> Iterable[_Base]:
         """Get the children of the block.
 
         :return: Children of the block
@@ -76,14 +78,14 @@ class _Base(Generic[_ParentT, _ChildT]):
         with open(file_path, "w") as file:
             file.write(html)
 
-    def _set_parent(self, parent: _ParentT | None) -> None:  # noqa: ANN401
+    def _set_parent(self, parent: _Base | None) -> None:
         """Set the parent of the block.
 
         :param parent: Parent of the block.
         """
         self._parent = parent
 
-    def _set_children(self, children: Iterable[_ChildT]) -> None:
+    def _set_children(self, children: Iterable[_Base]) -> None:
         """Set the children of the block.
 
         :param children: Children of the block.
@@ -133,7 +135,7 @@ class _Block(_Base):
     """
 
 
-@dataclass(slots=True)
+@dataclass
 class _ParallelSystem(ABC, Generic[_DT], _Base):
     """The _System class is the base class for all systems.
 
@@ -160,8 +162,8 @@ class _ParallelSystem(ABC, Generic[_DT], _Base):
             # Save html format to file_path
     """
 
-    steps: Sequence[_ChildT] = field(default_factory=list)
-    weights: Sequence[numbers.Real] = field(default_factory=list)
+    steps: Annotated[Sequence[_Base], MinLen(1)] = field(default_factory=list)
+    weights: Annotated[Sequence[float], MinLen(1)] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Post init function of _System class."""
@@ -176,24 +178,25 @@ class _ParallelSystem(ABC, Generic[_DT], _Base):
 
         # Set weights if they exist
         if len(self.weights) == len(self.get_steps()):
-            [w / sum(self.weights) for w in self.weights]
+            self.weights = [w / sum(self.weights) for w in self.weights]
         else:
             num_steps = len(self.get_steps())
-            self.weights = [1 / num_steps for x in self.steps]
+            self.weights = [1 / num_steps] * num_steps
 
         self._set_children(self.steps)
 
-    def get_steps(self) -> Sequence[_ChildT]:
+    def get_steps(self) -> Annotated[Sequence[_Base], MinLen(1)]:
         """Return list of steps of _ParallelSystem.
 
         :return: List of steps.
         """
         return self.steps
 
-    def get_weights(self) -> Sequence[numbers.Real]:
+    def get_weights(self) -> Annotated[Sequence[float], MinLen(1)]:
         """Return list of weights of _ParallelSystem.
 
         :return: List of weights.
+        :raises TypeError: If mismatch between weights and steps.
         """
         if len(self.get_steps()) != len(self.weights):
             raise TypeError("Mismatch between weights and steps")
@@ -226,7 +229,7 @@ class _ParallelSystem(ABC, Generic[_DT], _Base):
         self._hash = hash(total)
 
     @abstractmethod
-    def concat(self, original_data: _DT, data_to_concat: _DT, weight: numbers.Real = 1.0) -> _DT:  # noqa: ANN401
+    def concat(self, original_data: _DT | None, data_to_concat: _DT, weight: float = 1.0) -> _DT:
         """Concatenate the transformed data.
 
         :param original_data: The first input data.
@@ -259,7 +262,7 @@ class _SequentialSystem(_Base):
             # Save html format to file_path
     """
 
-    steps: Sequence[_ChildT] = field(default_factory=list)
+    steps: Annotated[Sequence[_Base], MinLen(1)] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Post init function of _System class."""
@@ -271,7 +274,7 @@ class _SequentialSystem(_Base):
 
         self._set_children(self.steps)
 
-    def get_steps(self) -> Sequence[_ChildT]:
+    def get_steps(self) -> Sequence[_Base]:
         """Return list of steps of _ParallelSystem.
 
         :return: List of steps.
