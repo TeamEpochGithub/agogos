@@ -2,7 +2,6 @@
 
 import copy
 import warnings
-from abc import abstractmethod
 from typing import Any, Generic, TypeVar
 
 from agogos._core import _Base, _Block, _ParallelSystem, _SequentialSystem
