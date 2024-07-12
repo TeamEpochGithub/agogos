@@ -1,16 +1,12 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+# ruff: noqa: INP001
 
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+"""Sphinx configuration file."""
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 project = "Agogos"
-copyright = "2024, Jasper van Selm"
+copyright = "2024, Jasper van Selm"  # noqa: A001
 author = "Jasper van Selm"
 
 # Add root path of repository

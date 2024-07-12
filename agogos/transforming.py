@@ -1,26 +1,25 @@
+"""Base classes related to transforming pipelines."""
+
 import copy
+import warnings
 from abc import abstractmethod
 from typing import Any
 
-import warnings
-
-
-from agogos._core import _Block, _SequentialSystem, _ParallelSystem, _Base
+from agogos._core import _Base, _Block, _ParallelSystem, _SequentialSystem
 
 
 class TransformType(_Base):
-    """Abstract transform type describing a class that implements the transform function"""
+    """Abstract transform type describing a class that implements the transform function."""
 
     @abstractmethod
-    def transform(self, data: Any, **transform_args: Any) -> Any:
+    def transform(self, data: Any, **transform_args: Any) -> Any:  # noqa: ANN401
         """Transform the input data.
 
         :param data: The input data.
         :param transform_args: Keyword arguments.
-        :return: The transformed data."""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} does not implement transform method."
-        )
+        :return: The transformed data.
+        """
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement transform method.")
 
 
 class Transformer(TransformType, _Block):
@@ -48,10 +47,12 @@ class Transformer(TransformType, _Block):
     .. code-block:: python
         from agogos.transformer import Transformer
 
+
         class MyTransformer(Transformer):
             def transform(self, data: Any, **transform_args: Any) -> Any:
                 # Transform the input data.
                 return data
+
 
         my_transformer = MyTransformer()
         transformed_data = my_transformer.transform(data)
@@ -96,7 +97,6 @@ class TransformingSystem(TransformType, _SequentialSystem):
 
     def __post_init__(self) -> None:
         """Post init method for the TransformingSystem class."""
-
         # Assert all steps are a subclass of Transformer
         for step in self.steps:
             if not isinstance(step, (TransformType)):
@@ -104,22 +104,19 @@ class TransformingSystem(TransformType, _SequentialSystem):
 
         super().__post_init__()
 
-    def transform(self, data: Any, **transform_args: Any) -> Any:
+    def transform(self, data: Any, **transform_args: Any) -> Any:  # noqa: ANN401
         """Transform the input data.
 
         :param data: The input data.
         :return: The transformed data.
         """
-
         set_of_steps = set()
         for step in self.steps:
             step_name = step.__class__.__name__
             set_of_steps.add(step_name)
         if set_of_steps != set(transform_args.keys()):
             # Raise a warning and print all the keys that do not match
-            warnings.warn(
-                f"The following steps do not exist but were given in the kwargs: {set(transform_args.keys()) - set_of_steps}"
-            )
+            warnings.warn(f"The following steps do not exist but were given in the kwargs: {set(transform_args.keys()) - set_of_steps}", stacklevel=2)
 
         # Loop through each step and call the transform method
         for step in self.steps:
@@ -166,10 +163,12 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
         transformer_1 = CustomTransformer()
         transformer_2 = CustomTransformer()
 
+
         class CustomParallelTransformingSystem(ParallelTransformingSystem):
             def concat(self, data1: Any, data2: Any) -> Any:
                 # Concatenate the transformed data.
                 return data1 + data2
+
 
         transforming_system = CustomParallelTransformingSystem(steps=[transformer_1, transformer_2])
 
@@ -178,7 +177,6 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
 
     def __post_init__(self) -> None:
         """Post init method for the ParallelTransformingSystem class."""
-
         # Assert all steps are a subclass of Transformer or TransformingSystem
         for step in self.steps:
             if not isinstance(step, (TransformType)):
@@ -186,7 +184,7 @@ class ParallelTransformingSystem(TransformType, _ParallelSystem):
 
         super().__post_init__()
 
-    def transform(self, data: Any, **transform_args: Any) -> Any:
+    def transform(self, data: Any, **transform_args: Any) -> Any:  # noqa: ANN401
         """Transform the input data.
 
         :param data: The input data.
