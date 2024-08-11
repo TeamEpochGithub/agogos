@@ -1,4 +1,4 @@
-﻿agogos
+agogos
 ======
 
 .. automodule:: agogos
