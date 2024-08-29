@@ -7,7 +7,7 @@
 [![PyPI Latest Release](https://img.shields.io/pypi/v/agogos.svg)](https://pypi.org/project/agogos/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/agogos.svg?label=PyPI%20downloads)](https://pypi.org/project/agogos/)
 
-This package contains many modules and classes necessary to construct the ml pipeline for machine learning competitions.
+[WARNING] This project has been moved into [EpochLib](https://github.com/TeamEpochGithub/epochlib) under pipeline and is not updated anymore. This package contains modules and classes necessary to construct an ml pipeline for machine learning competitions.
 
 ## Description
 
